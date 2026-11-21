@@ -1,0 +1,904 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Dept. of Mechanical Engineering — VNIT Nagpur</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap">
+<style>
+/* ═══════════════════════════════════════════════════════
+   DESIGN TOKENS — edit these to change colors/fonts
+   ═══════════════════════════════════════════════════════ */
+:root {
+  --bg:         #07090f;
+  --surface:    #0f1319;
+  --surface2:   #161c27;
+  --surface3:   #1d2535;
+  --border:     #252e42;
+  --border2:    #1a2130;
+  --fg:         #e8ecf6;
+  --fg2:        #8c97b4;
+  --fg3:        #4e5a76;
+  --accent:     #1a56db;   /* VNIT blue */
+  --accent2:    #f59e0b;   /* gold accent */
+  --accent3:    #10b981;   /* green */
+  --red:        #ef4444;
+  --radius:     14px;
+  --radius-sm:  8px;
+  --gap:        14px;
+  color-scheme: dark;
+}
+
+/* ═══════════════════════════════════════════════════════
+   RESET & BASE
+   ═══════════════════════════════════════════════════════ */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html, body {
+  height: 100%; width: 100%;
+  background: var(--bg);
+  color: var(--fg);
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 14px;
+  line-height: 1.5;
+  overflow: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ═══════════════════════════════════════════════════════
+   OUTER SHELL
+   ═══════════════════════════════════════════════════════ */
+.shell {
+  display: grid;
+  height: 100vh;
+  grid-template-rows: 80px 1fr;
+  gap: var(--gap);
+  padding: 12px 14px 14px;
+}
+
+/* ═══════════════════════════════════════════════════════
+   HEADER
+   ═══════════════════════════════════════════════════════ */
+.header {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 20px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 0 20px 0 16px;
+  position: relative;
+  overflow: hidden;
+}
+.header::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  width: 4px;
+  background: linear-gradient(180deg, var(--accent), var(--accent2));
+}
+
+.header-brand { display: flex; align-items: center; gap: 12px; }
+.brand-emblem {
+  width: 44px; height: 44px;
+  background: linear-gradient(135deg, var(--accent), #0e3fa6);
+  border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 22px;
+  flex-shrink: 0;
+  box-shadow: 0 2px 12px rgba(26,86,219,0.4);
+}
+.brand-text { min-width: 0; }
+.brand-name {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 15px; font-weight: 700;
+  color: var(--fg); line-height: 1.2;
+  letter-spacing: -0.01em;
+}
+.brand-sub { font-size: 11px; color: var(--fg2); letter-spacing: 0.03em; }
+
+.header-ticker {
+  min-width: 0;
+  overflow: hidden;
+  border-left: 1px solid var(--border);
+  border-right: 1px solid var(--border);
+  padding: 0 16px;
+  height: 100%;
+  display: flex; align-items: center;
+}
+.ticker-label {
+  font-size: 10px; font-weight: 700; letter-spacing: 0.1em;
+  text-transform: uppercase; color: var(--accent2);
+  flex-shrink: 0; margin-right: 10px;
+  background: rgba(245,158,11,0.1);
+  padding: 3px 8px; border-radius: 4px;
+}
+.ticker-track { overflow: hidden; flex: 1; }
+.ticker-inner {
+  display: inline-block; white-space: nowrap;
+  font-size: 12px; color: var(--fg2);
+  animation: scroll-ticker 40s linear infinite;
+}
+@keyframes scroll-ticker {
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+.header-clock { text-align: right; flex-shrink: 0; }
+.clock-time {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 32px; font-weight: 700;
+  letter-spacing: -0.04em; line-height: 1;
+  font-variant-numeric: tabular-nums;
+  color: var(--fg);
+}
+.clock-date { font-size: 11px; color: var(--fg2); margin-top: 2px; }
+
+/* ═══════════════════════════════════════════════════════
+   MAIN GRID
+   ═══════════════════════════════════════════════════════ */
+.main {
+  display: grid;
+  grid-template-columns: 1.5fr 1fr 1fr;
+  grid-template-rows: 1fr 1fr;
+  gap: var(--gap);
+  min-height: 0;
+}
+
+/* ═══════════════════════════════════════════════════════
+   CARD BASE
+   ═══════════════════════════════════════════════════════ */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  display: flex; flex-direction: column;
+  overflow: hidden; min-height: 0;
+}
+.card-hd {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 10px 16px;
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+.card-title {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 10px; font-weight: 700;
+  letter-spacing: 0.1em; text-transform: uppercase;
+  color: var(--fg3);
+  display: flex; align-items: center; gap: 7px;
+}
+.card-title .dot {
+  width: 6px; height: 6px; border-radius: 50%;
+  animation: blink 2.5s infinite;
+}
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:.25} }
+.dot-blue   { background: var(--accent); }
+.dot-gold   { background: var(--accent2); }
+.dot-green  { background: var(--accent3); }
+.dot-red    { background: var(--red); }
+.card-count {
+  font-size: 10px; color: var(--fg3);
+  background: var(--surface2); padding: 2px 8px;
+  border-radius: 20px; border: 1px solid var(--border);
+}
+.card-body { flex: 1; overflow: hidden; display: flex; flex-direction: column; min-height: 0; }
+.scroll-area { flex: 1; overflow-y: auto; scrollbar-width: none; }
+.scroll-area::-webkit-scrollbar { display: none; }
+
+/* ═══════════════════════════════════════════════════════
+   FACULTY CAROUSEL — spans both rows, left column
+   ═══════════════════════════════════════════════════════ */
+.faculty-card { grid-row: 1 / 3; }
+.faculty-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1px;
+  background: var(--border2);
+  flex: 1;
+  overflow: hidden;
+}
+.faculty-item {
+  background: var(--surface);
+  padding: 14px 14px 12px;
+  display: flex; flex-direction: column;
+  align-items: center; gap: 8px;
+  text-align: center;
+  transition: background 0.2s;
+  cursor: default;
+  position: relative;
+  overflow: hidden;
+}
+.faculty-item::after {
+  content: '';
+  position: absolute; bottom: 0; left: 0; right: 0;
+  height: 2px;
+  background: var(--accent);
+  transform: scaleX(0); transition: transform 0.3s;
+}
+.faculty-item:hover { background: var(--surface2); }
+.faculty-item:hover::after { transform: scaleX(1); }
+
+.faculty-avatar {
+  width: 60px; height: 60px; border-radius: 50%;
+  background: var(--surface3);
+  border: 2px solid var(--border);
+  overflow: hidden; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 22px;
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 700;
+  color: var(--accent);
+  object-fit: cover;
+}
+.faculty-avatar img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
+
+.faculty-name {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 12.5px; font-weight: 700;
+  color: var(--fg); line-height: 1.2;
+  text-wrap: balance;
+}
+.faculty-desig {
+  font-size: 10.5px; color: var(--accent2);
+  font-weight: 500; line-height: 1.2;
+}
+.faculty-area {
+  font-size: 10px; color: var(--fg2);
+  line-height: 1.4;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.faculty-tags {
+  display: flex; flex-wrap: wrap; gap: 4px; justify-content: center;
+}
+.faculty-tag {
+  font-size: 9px; color: var(--accent);
+  background: rgba(26,86,219,0.12);
+  padding: 2px 6px; border-radius: 10px;
+  border: 1px solid rgba(26,86,219,0.2);
+  line-height: 1.4;
+}
+
+/* pagination dots */
+.faculty-pager {
+  display: flex; align-items: center; justify-content: center;
+  gap: 6px; padding: 8px;
+  border-top: 1px solid var(--border);
+  flex-shrink: 0;
+}
+.pager-dot {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: var(--border); cursor: pointer;
+  transition: background 0.2s, transform 0.2s;
+}
+.pager-dot.active { background: var(--accent); transform: scale(1.3); }
+
+/* ═══════════════════════════════════════════════════════
+   MEETINGS CARD
+   ═══════════════════════════════════════════════════════ */
+.meeting-item {
+  display: grid;
+  grid-template-columns: 52px 3px 1fr;
+  gap: 0 10px;
+  padding: 11px 16px;
+  align-items: start;
+  border-bottom: 1px solid var(--border2);
+}
+.meeting-item:last-child { border-bottom: none; }
+.meeting-time {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 11.5px; font-weight: 700;
+  color: var(--accent); font-variant-numeric: tabular-nums;
+  padding-top: 1px;
+}
+.meeting-time.past { color: var(--fg3); }
+.meeting-time.now  { color: var(--accent2); }
+.meeting-bar { align-self: stretch; border-radius: 2px; background: var(--border); min-height: 32px; }
+.meeting-bar.now  { background: var(--accent2); }
+.meeting-bar.done { background: var(--fg3); opacity: 0.3; }
+.meeting-info { min-width: 0; }
+.meeting-title {
+  font-size: 12.5px; font-weight: 600; color: var(--fg); line-height: 1.3;
+}
+.meeting-title.done { color: var(--fg3); text-decoration: line-through; }
+.meeting-sub { font-size: 10.5px; color: var(--fg2); margin-top: 2px; }
+.now-pill {
+  display: inline-block; font-size: 8.5px; font-weight: 700;
+  letter-spacing: 0.08em; text-transform: uppercase;
+  color: var(--accent2); background: rgba(245,158,11,0.12);
+  padding: 2px 6px; border-radius: 10px; margin-left: 6px;
+  vertical-align: middle;
+}
+
+/* ═══════════════════════════════════════════════════════
+   ANNOUNCEMENTS CARD
+   ═══════════════════════════════════════════════════════ */
+.announce-item {
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--border2);
+  display: flex; gap: 10px; align-items: flex-start;
+}
+.announce-item:last-child { border-bottom: none; }
+.announce-icon {
+  width: 30px; height: 30px; border-radius: var(--radius-sm);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 15px; flex-shrink: 0;
+}
+.announce-icon.urgent { background: rgba(239,68,68,0.12); }
+.announce-icon.info   { background: rgba(26,86,219,0.12); }
+.announce-icon.notice { background: rgba(245,158,11,0.12); }
+.announce-content { min-width: 0; }
+.announce-title {
+  font-size: 12.5px; font-weight: 600; color: var(--fg); line-height: 1.3;
+}
+.announce-body { font-size: 11px; color: var(--fg2); margin-top: 3px; line-height: 1.5; }
+.announce-meta {
+  display: flex; gap: 8px; align-items: center; margin-top: 5px;
+}
+.announce-tag {
+  font-size: 9.5px; padding: 2px 7px; border-radius: 10px;
+  font-weight: 600; letter-spacing: 0.03em;
+}
+.tag-urgent { color: var(--red); background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.2); }
+.tag-info   { color: var(--accent); background: rgba(26,86,219,0.1); border: 1px solid rgba(26,86,219,0.2); }
+.tag-notice { color: var(--accent2); background: rgba(245,158,11,0.1); border: 1px solid rgba(245,158,11,0.2); }
+.announce-date { font-size: 10px; color: var(--fg3); }
+
+/* ═══════════════════════════════════════════════════════
+   ACHIEVEMENTS CARD
+   ═══════════════════════════════════════════════════════ */
+.achieve-item {
+  padding: 11px 16px;
+  border-bottom: 1px solid var(--border2);
+  display: flex; gap: 10px; align-items: flex-start;
+}
+.achieve-item:last-child { border-bottom: none; }
+.achieve-badge {
+  width: 32px; height: 32px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 16px; flex-shrink: 0;
+  background: var(--surface3);
+  border: 1px solid var(--border);
+}
+.achieve-info { min-width: 0; }
+.achieve-name {
+  font-size: 12.5px; font-weight: 600; color: var(--fg); line-height: 1.3;
+}
+.achieve-desc { font-size: 11px; color: var(--fg2); margin-top: 2px; line-height: 1.4; }
+.achieve-who { font-size: 10px; color: var(--accent2); margin-top: 4px; font-weight: 500; }
+
+/* ═══════════════════════════════════════════════════════
+   GUEST LECTURE CARD  (bottom-right)
+   ═══════════════════════════════════════════════════════ */
+.guest-featured {
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--border);
+  background: linear-gradient(135deg, rgba(26,86,219,0.08), rgba(245,158,11,0.05));
+}
+.guest-eyebrow {
+  font-size: 9.5px; letter-spacing: 0.1em; text-transform: uppercase;
+  color: var(--accent2); font-weight: 700; margin-bottom: 6px;
+}
+.guest-title {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 14px; font-weight: 700;
+  color: var(--fg); line-height: 1.35;
+  text-wrap: balance;
+}
+.guest-speaker {
+  font-size: 11.5px; color: var(--accent); margin-top: 5px; font-weight: 500;
+}
+.guest-when {
+  font-size: 10.5px; color: var(--fg2); margin-top: 3px;
+}
+.guest-venue {
+  display: inline-flex; align-items: center; gap: 4px;
+  font-size: 10px; color: var(--fg3);
+  background: var(--surface2); padding: 3px 8px;
+  border-radius: 10px; margin-top: 6px;
+  border: 1px solid var(--border);
+}
+
+.guest-upcoming { flex: 1; overflow-y: auto; scrollbar-width: none; }
+.guest-upcoming::-webkit-scrollbar { display: none; }
+.guest-row {
+  padding: 9px 16px;
+  border-bottom: 1px solid var(--border2);
+  display: flex; gap: 10px; align-items: center;
+}
+.guest-row:last-child { border-bottom: none; }
+.guest-row-date {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 10px; font-weight: 700; color: var(--accent2);
+  font-variant-numeric: tabular-nums;
+  min-width: 36px; text-align: center;
+  background: rgba(245,158,11,0.08);
+  padding: 4px 4px; border-radius: 6px;
+  line-height: 1.2;
+}
+.guest-row-info { min-width: 0; }
+.guest-row-title { font-size: 12px; font-weight: 600; color: var(--fg); line-height: 1.3; }
+.guest-row-speaker { font-size: 10.5px; color: var(--fg2); }
+</style>
+</head>
+<body>
+<div class="shell">
+
+  <!-- ══════════ HEADER ══════════ -->
+  <header class="header">
+    <div class="header-brand">
+      <div class="brand-emblem">⚙️</div>
+      <div class="brand-text">
+        <div class="brand-name">Department of Mechanical Engineering</div>
+        <div class="brand-sub">VISVESVARAYA NATIONAL INSTITUTE OF TECHNOLOGY · NAGPUR</div>
+      </div>
+    </div>
+
+    <div class="header-ticker">
+      <span class="ticker-label">📢 Notice</span>
+      <div class="ticker-track">
+        <div class="ticker-inner" id="tickerInner">
+          <!-- filled by JS -->
+        </div>
+      </div>
+    </div>
+
+    <div class="header-clock">
+      <div class="clock-time" id="clockTime">00:00:00</div>
+      <div class="clock-date" id="clockDate">—</div>
+    </div>
+  </header>
+
+  <!-- ══════════ MAIN GRID ══════════ -->
+  <div class="main">
+
+    <!-- ── Faculty (left, spans 2 rows) ── -->
+    <div class="card faculty-card">
+      <div class="card-hd">
+        <div class="card-title"><span class="dot dot-blue"></span>Faculty Directory</div>
+        <div class="card-count" id="facultyCount">—</div>
+      </div>
+      <div class="card-body">
+        <div class="faculty-grid" id="facultyGrid"></div>
+        <div class="faculty-pager" id="facultyPager"></div>
+      </div>
+    </div>
+
+    <!-- ── Meetings (top-middle) ── -->
+    <div class="card">
+      <div class="card-hd">
+        <div class="card-title"><span class="dot dot-gold"></span>Meeting Schedule</div>
+        <div class="card-count" id="meetDay">Today</div>
+      </div>
+      <div class="card-body">
+        <div class="scroll-area" id="meetingList"></div>
+      </div>
+    </div>
+
+    <!-- ── Announcements (top-right) ── -->
+    <div class="card">
+      <div class="card-hd">
+        <div class="card-title"><span class="dot dot-red"></span>Announcements</div>
+        <div class="card-count" id="announceCount">—</div>
+      </div>
+      <div class="card-body">
+        <div class="scroll-area" id="announceList"></div>
+      </div>
+    </div>
+
+    <!-- ── Achievements (bottom-middle) ── -->
+    <div class="card">
+      <div class="card-hd">
+        <div class="card-title"><span class="dot dot-green"></span>Achievements</div>
+        <div class="card-count">Faculty &amp; Students</div>
+      </div>
+      <div class="card-body">
+        <div class="scroll-area" id="achieveList"></div>
+      </div>
+    </div>
+
+    <!-- ── Guest Lectures (bottom-right) ── -->
+    <div class="card">
+      <div class="card-hd">
+        <div class="card-title"><span class="dot dot-blue"></span>Guest Lectures &amp; Events</div>
+        <div class="card-count">Upcoming</div>
+      </div>
+      <div class="card-body">
+        <div id="guestBody" style="display:flex;flex-direction:column;flex:1;overflow:hidden;min-height:0;"></div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+"use strict";
+
+/* ══════════════════════════════════════════════════════════════
+   ✏️  EDIT THIS SECTION TO UPDATE CONTENT
+   ══════════════════════════════════════════════════════════════ */
+
+/* ── TICKER messages (shown in header scrolling bar) ────────── */
+const TICKER_MESSAGES = [
+  "📋 Please sign the Stipend Register before 5:00 PM today",
+  "📌 PhD viva of Mr. Ravi Sharma on 25 Nov 2026 at 11:00 AM, Seminar Hall",
+  "📢 Submit project reports to HOD office by 30 November 2026",
+  "🎓 Convocation rehearsal for final year students on 28 Nov at 9:00 AM",
+  "📋 Faculty meeting this Friday at 3:00 PM — attendance mandatory",
+  "🔧 Lab equipment maintenance: CNC lab closed on 22 Nov (Saturday)",
+];
+
+/* ── FACULTY list ────────────────────────────────────────────── */
+/* image: put a URL or leave "" for initials avatar              */
+const FACULTY = [
+  {
+    name: "Prof. A. K. Sharma",
+    desig: "Head of Department",
+    area: "Manufacturing Technology & CNC Machining",
+    tags: ["Manufacturing", "CNC", "CAD/CAM"],
+    image: "",
+  },
+  {
+    name: "Dr. P. R. Vaidya",
+    desig: "Professor",
+    area: "Thermal Engineering & Heat Transfer",
+    tags: ["Heat Transfer", "CFD", "Thermodynamics"],
+    image: "",
+  },
+  {
+    name: "Dr. S. M. Deshmukh",
+    desig: "Associate Professor",
+    area: "Machine Design & Finite Element Analysis",
+    tags: ["FEA", "Machine Design", "Tribology"],
+    image: "",
+  },
+  {
+    name: "Dr. R. D. Kulkarni",
+    desig: "Associate Professor",
+    area: "Fluid Mechanics & Turbomachinery",
+    tags: ["Fluid Mechanics", "Turbomachinery"],
+    image: "",
+  },
+  {
+    name: "Dr. N. J. Bhosale",
+    desig: "Assistant Professor",
+    area: "Robotics & Automation",
+    tags: ["Robotics", "Automation", "IoT"],
+    image: "",
+  },
+  {
+    name: "Dr. V. K. Tiwari",
+    desig: "Assistant Professor",
+    area: "Composite Materials & Fracture Mechanics",
+    tags: ["Composites", "Fracture Mechanics"],
+    image: "",
+  },
+  {
+    name: "Dr. M. S. Pawar",
+    desig: "Assistant Professor",
+    area: "Internal Combustion Engines & Biofuels",
+    tags: ["IC Engines", "Biofuels", "Emissions"],
+    image: "",
+  },
+  {
+    name: "Dr. A. P. Bhatt",
+    desig: "Assistant Professor",
+    area: "Additive Manufacturing & 3D Printing",
+    tags: ["Additive Mfg", "3D Printing", "DFAM"],
+    image: "",
+  },
+  {
+    name: "Dr. K. R. Joshi",
+    desig: "Assistant Professor",
+    area: "Vibration Analysis & Condition Monitoring",
+    tags: ["Vibration", "NDT", "Signal Processing"],
+    image: "",
+  },
+  {
+    name: "Dr. P. D. Aware",
+    desig: "Assistant Professor",
+    area: "Supply Chain Management & Industrial Engg",
+    tags: ["Supply Chain", "Lean", "Six Sigma"],
+    image: "",
+  },
+];
+
+/* ── MEETING SCHEDULE ────────────────────────────────────────── */
+const MEETINGS = [
+  { time: "09:00", title: "Morning Briefing — HOD's Office", sub: "Department faculty · Room 101", dur: 30 },
+  { time: "10:30", title: "Departmental Academic Review", sub: "All faculty · Seminar Hall", dur: 60 },
+  { time: "12:00", title: "PhD Progress Review Committee", sub: "Research scholars · Conference Room", dur: 90 },
+  { time: "14:00", title: "NIRF Data Submission Meeting", sub: "NAAC committee members", dur: 60 },
+  { time: "15:30", title: "Lab Committee Discussion", sub: "Lab in-charges · HOD office", dur: 45 },
+  { time: "17:00", title: "Faculty Council — End of Month", sub: "All teaching staff · Seminar Hall", dur: 60 },
+];
+
+/* ── ANNOUNCEMENTS ───────────────────────────────────────────── */
+/* type: "urgent" | "info" | "notice"                            */
+const ANNOUNCEMENTS = [
+  {
+    type: "urgent",
+    icon: "📋",
+    title: "Sign Stipend Register Today",
+    body: "All PhD scholars must sign the stipend register at the department office before 5:00 PM.",
+    date: "21 Nov 2026",
+  },
+  {
+    type: "notice",
+    icon: "📝",
+    title: "Project Report Submission Deadline",
+    body: "B.Tech final year project reports to be submitted in hard + soft copy by 30 Nov 2026.",
+    date: "20 Nov 2026",
+  },
+  {
+    type: "info",
+    icon: "🏛️",
+    title: "NIRF Ranking Data Collection",
+    body: "Faculty requested to update their publications and project data in the NIRF portal by 25 Nov.",
+    date: "19 Nov 2026",
+  },
+  {
+    type: "urgent",
+    icon: "🎓",
+    title: "Convocation Rehearsal",
+    body: "Final year graduating students — mandatory rehearsal on 28 Nov 2026 at 9:00 AM, Main Ground.",
+    date: "21 Nov 2026",
+  },
+  {
+    type: "notice",
+    icon: "🔧",
+    title: "CNC Lab Closed — Maintenance",
+    body: "CNC and Advanced Manufacturing Lab will remain closed on 22 November (Saturday) for annual maintenance.",
+    date: "20 Nov 2026",
+  },
+];
+
+/* ── ACHIEVEMENTS ────────────────────────────────────────────── */
+const ACHIEVEMENTS = [
+  {
+    emoji: "🏆",
+    title: "Best Paper Award — AIMTDR 2026",
+    desc: "Received Best Paper Award at the 10th International Conference on Advances in Manufacturing Technology.",
+    who: "Dr. S. M. Deshmukh & Team",
+  },
+  {
+    emoji: "🥇",
+    title: "GATE 2026 — AIR 12",
+    desc: "Secured All India Rank 12 in GATE 2026 (Mechanical Engineering) out of 2.1 lakh candidates.",
+    who: "Mr. Aniket Raut, B.Tech Final Year",
+  },
+  {
+    emoji: "🔬",
+    title: "DST SERB Research Grant Awarded",
+    desc: "Received ₹28 Lakhs research grant from DST-SERB for project on sustainable manufacturing processes.",
+    who: "Dr. P. R. Vaidya",
+  },
+  {
+    emoji: "🌍",
+    title: "International Collaboration — TU Munich",
+    desc: "MoU signed with Technical University of Munich for student & faculty exchange programme 2026-28.",
+    who: "Department of Mechanical Engineering",
+  },
+  {
+    emoji: "🎖️",
+    title: "Smart India Hackathon 2026 — Finalists",
+    desc: "Team MechVNIT selected among top 10 finalists in Smart India Hackathon 2026 for their EV cooling solution.",
+    who: "5 B.Tech Students — Team MechVNIT",
+  },
+];
+
+/* ── GUEST LECTURES & EVENTS ─────────────────────────────────── */
+const GUEST_LECTURES = [
+  {
+    featured: true,
+    title: "Advances in Additive Manufacturing for Aerospace Applications",
+    speaker: "Prof. Ramesh K. Singh, IIT Bombay",
+    when: "25 November 2026 · 11:00 AM",
+    venue: "Seminar Hall, Mech Dept",
+  },
+  {
+    date: "28 Nov", title: "Industry 4.0 & Smart Manufacturing", speaker: "Mr. Sunil Waghmare, L&T MHI",
+  },
+  {
+    date: "02 Dec", title: "CFD in Automotive Design", speaker: "Dr. Amit Kulkarni, ARAI Pune",
+  },
+  {
+    date: "05 Dec", title: "Career in Core Mechanical — Industry Perspective", speaker: "Mr. Rohit Nair, Tata Motors",
+  },
+  {
+    date: "10 Dec", title: "Robotics & Automation in Modern Manufacturing", speaker: "Dr. Priya Mehta, CSIR-CMTI",
+  },
+];
+
+/* ══════════════════════════════════════════════════════════════
+   CLOCK & DATE
+   ══════════════════════════════════════════════════════════════ */
+function updateClock() {
+  const now = new Date();
+  const hh = String(now.getHours()).padStart(2,'0');
+  const mm = String(now.getMinutes()).padStart(2,'0');
+  const ss = String(now.getSeconds()).padStart(2,'0');
+  document.getElementById('clockTime').textContent = `${hh}:${mm}:${ss}`;
+  const days = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+  const months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+  document.getElementById('clockDate').textContent =
+    `${days[now.getDay()]}, ${now.getDate()} ${months[now.getMonth()]} ${now.getFullYear()}`;
+  const dnames = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+  document.getElementById('meetDay').textContent = dnames[now.getDay()];
+}
+setInterval(updateClock, 1000);
+updateClock();
+
+/* ══════════════════════════════════════════════════════════════
+   TICKER
+   ══════════════════════════════════════════════════════════════ */
+(function() {
+  const text = TICKER_MESSAGES.join('   ·   ');
+  const inner = document.getElementById('tickerInner');
+  inner.innerHTML = escHtml(text) + '   ·   ' + escHtml(text);
+})();
+
+/* ══════════════════════════════════════════════════════════════
+   FACULTY CAROUSEL (auto-pages every 8s, 2×3 grid = 6 per page)
+   ══════════════════════════════════════════════════════════════ */
+const PER_PAGE = 6;
+let currentPage = 0;
+let facultyTimer;
+
+function renderFaculty(page) {
+  const grid = document.getElementById('facultyGrid');
+  const pager = document.getElementById('facultyPager');
+  const total = Math.ceil(FACULTY.length / PER_PAGE);
+  const slice = FACULTY.slice(page * PER_PAGE, (page + 1) * PER_PAGE);
+
+  document.getElementById('facultyCount').textContent = `${FACULTY.length} Faculty`;
+
+  grid.innerHTML = slice.map(f => {
+    const initials = f.name.replace('Prof.','').replace('Dr.','').trim().split(' ')
+      .filter(Boolean).map(w => w[0]).slice(0,2).join('');
+    const avatarHtml = f.image
+      ? `<img src="${escHtml(f.image)}" alt="${escHtml(f.name)}" onerror="this.parentElement.textContent='${escHtml(initials)}'">`
+      : escHtml(initials);
+    return `<div class="faculty-item">
+      <div class="faculty-avatar">${avatarHtml}</div>
+      <div class="faculty-name">${escHtml(f.name)}</div>
+      <div class="faculty-desig">${escHtml(f.desig)}</div>
+      <div class="faculty-area">${escHtml(f.area)}</div>
+      <div class="faculty-tags">${f.tags.map(t => `<span class="faculty-tag">${escHtml(t)}</span>`).join('')}</div>
+    </div>`;
+  }).join('');
+
+  // pager dots
+  pager.innerHTML = Array.from({length: total}, (_,i) =>
+    `<div class="pager-dot ${i===page?'active':''}" onclick="goPage(${i})"></div>`
+  ).join('');
+}
+
+function goPage(p) {
+  clearInterval(facultyTimer);
+  currentPage = p;
+  renderFaculty(currentPage);
+  startFacultyTimer();
+}
+
+function startFacultyTimer() {
+  facultyTimer = setInterval(() => {
+    const total = Math.ceil(FACULTY.length / PER_PAGE);
+    currentPage = (currentPage + 1) % total;
+    renderFaculty(currentPage);
+  }, 8000);
+}
+
+renderFaculty(0);
+startFacultyTimer();
+
+/* ══════════════════════════════════════════════════════════════
+   MEETINGS
+   ══════════════════════════════════════════════════════════════ */
+function renderMeetings() {
+  const now = new Date();
+  const nowMins = now.getHours() * 60 + now.getMinutes();
+  document.getElementById('meetingList').innerHTML = MEETINGS.map(m => {
+    const [h, mi] = m.time.split(':').map(Number);
+    const start = h * 60 + mi, end = start + m.dur;
+    const isNow = nowMins >= start && nowMins < end;
+    const isPast = nowMins >= end;
+    return `<div class="meeting-item">
+      <div class="meeting-time ${isNow?'now':isPast?'past':''}">${escHtml(m.time)}</div>
+      <div class="meeting-bar ${isNow?'now':isPast?'done':''}"></div>
+      <div class="meeting-info">
+        <div class="meeting-title ${isPast?'done':''}">${escHtml(m.title)}${isNow?'<span class="now-pill">NOW</span>':''}</div>
+        <div class="meeting-sub">${escHtml(m.sub)}</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+renderMeetings();
+setInterval(renderMeetings, 60000);
+
+/* ══════════════════════════════════════════════════════════════
+   ANNOUNCEMENTS
+   ══════════════════════════════════════════════════════════════ */
+(function(){
+  document.getElementById('announceCount').textContent = `${ANNOUNCEMENTS.length} items`;
+  document.getElementById('announceList').innerHTML = ANNOUNCEMENTS.map(a => `
+    <div class="announce-item">
+      <div class="announce-icon ${a.type}">${a.icon}</div>
+      <div class="announce-content">
+        <div class="announce-title">${escHtml(a.title)}</div>
+        <div class="announce-body">${escHtml(a.body)}</div>
+        <div class="announce-meta">
+          <span class="announce-tag tag-${a.type}">${a.type.toUpperCase()}</span>
+          <span class="announce-date">${escHtml(a.date)}</span>
+        </div>
+      </div>
+    </div>`).join('');
+})();
+
+/* ══════════════════════════════════════════════════════════════
+   ACHIEVEMENTS (auto-scroll every 5s)
+   ══════════════════════════════════════════════════════════════ */
+(function(){
+  const el = document.getElementById('achieveList');
+  el.innerHTML = ACHIEVEMENTS.map(a => `
+    <div class="achieve-item">
+      <div class="achieve-badge">${a.emoji}</div>
+      <div class="achieve-info">
+        <div class="achieve-name">${escHtml(a.title)}</div>
+        <div class="achieve-desc">${escHtml(a.desc)}</div>
+        <div class="achieve-who">— ${escHtml(a.who)}</div>
+      </div>
+    </div>`).join('');
+
+  let pos = 0;
+  setInterval(() => {
+    pos += 1;
+    if (pos >= el.scrollHeight - el.clientHeight) pos = 0;
+    el.scrollTo({ top: pos, behavior: 'smooth' });
+  }, 5000);
+})();
+
+/* ══════════════════════════════════════════════════════════════
+   GUEST LECTURES
+   ══════════════════════════════════════════════════════════════ */
+(function(){
+  const featured = GUEST_LECTURES.find(g => g.featured);
+  const upcoming = GUEST_LECTURES.filter(g => !g.featured);
+  let html = '';
+  if (featured) {
+    html += `<div class="guest-featured">
+      <div class="guest-eyebrow">⭐ Featured / Next Event</div>
+      <div class="guest-title">${escHtml(featured.title)}</div>
+      <div class="guest-speaker">🎤 ${escHtml(featured.speaker)}</div>
+      <div class="guest-when">📅 ${escHtml(featured.when)}</div>
+      <span class="guest-venue">📍 ${escHtml(featured.venue)}</span>
+    </div>`;
+  }
+  html += `<div class="guest-upcoming">` + upcoming.map(g => `
+    <div class="guest-row">
+      <div class="guest-row-date">${escHtml(g.date)}</div>
+      <div class="guest-row-info">
+        <div class="guest-row-title">${escHtml(g.title)}</div>
+        <div class="guest-row-speaker">${escHtml(g.speaker)}</div>
+      </div>
+    </div>`).join('') + `</div>`;
+  document.getElementById('guestBody').innerHTML = html;
+})();
+
+/* ══════════════════════════════════════════════════════════════
+   UTILITY
+   ══════════════════════════════════════════════════════════════ */
+function escHtml(s) {
+  return String(s)
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;')
+    .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+</script>
+</body>
+</html>
+
+</body></html>
