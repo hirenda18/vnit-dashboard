@@ -227,10 +227,11 @@ html,body{height:100%;width:100%;background:var(--bg);color:var(--fg);font-famil
 .shell{grid-template-rows:80px minmax(0,1fr) 64px;gap:var(--gap)}
 .header{grid-template-columns:auto 1fr auto}
 .header-ticker{display:none}
-.main{grid-template-columns:minmax(300px,.72fr) minmax(0,2.28fr);grid-template-rows:minmax(0,1fr);gap:var(--gap)}
+.main{grid-template-columns:minmax(300px,.72fr) minmax(0,2.05fr) minmax(300px,.72fr);grid-template-rows:minmax(0,1fr);gap:var(--gap)}
 .main>.card:not(.faculty-card):not(.gallery-card){display:none}
 .faculty-card{grid-column:1;grid-row:1}
 .gallery-card{grid-column:2;grid-row:1}
+.right-stack{grid-column:3;grid-row:1}
 /* Keep the rotating faculty profile above the complete faculty list */
 .faculty-spotlight{display:flex!important}
 .faculty-progress{display:block!important}
@@ -264,6 +265,28 @@ html,body{height:100%;width:100%;background:var(--bg);color:var(--fg);font-famil
  .bottom-ribbon-text{font-size:30px}
 }
 @media(prefers-reduced-motion:reduce){.bottom-ribbon-text{animation:none;white-space:normal}}
+
+/* R&D AND DEPARTMENT SNAPSHOT */
+.right-stack{grid-column:3;grid-row:1;display:flex;flex-direction:column;gap:var(--gap);min-height:0}
+.right-stack .card{flex:1;min-height:0}
+.project-scroll-window{position:relative;overflow:hidden;flex:1;min-height:0;padding:4px 14px}
+.project-track{display:flex;flex-direction:column;will-change:transform;transition:transform .7s ease}
+.project-entry{padding:10px 4px;border-bottom:1px solid var(--border2);flex:0 0 auto}
+.project-title{font-size:clamp(16px,1vw,23px);font-weight:700;line-height:1.25;color:var(--fg)}
+.project-meta{font-size:clamp(13px,.78vw,18px);color:var(--fg2);margin-top:4px;line-height:1.3}
+.project-amount{color:var(--accent2);font-weight:700}
+.project-empty{height:100%;display:flex;align-items:center;justify-content:center;color:var(--fg3);font-size:17px;text-align:center;padding:12px}
+.stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:12px;flex:1;min-height:0}
+.stat-tile{border:1px solid var(--border);border-radius:10px;background:var(--surface2);padding:10px;display:flex;flex-direction:column;justify-content:center;min-height:0}
+.stat-value{font-family:'Space Grotesk',sans-serif;font-size:clamp(25px,1.8vw,42px);font-weight:700;line-height:1.1;color:var(--accent);font-variant-numeric:tabular-nums}
+.stat-label{font-size:clamp(12px,.72vw,17px);font-weight:700;color:var(--fg2);text-transform:uppercase;letter-spacing:.04em;margin-top:5px}
+.right-stack .card-hd{padding:9px 12px}
+.bottom-ribbon{min-height:64px}
+.bottom-ribbon-label{font-size:clamp(18px,1.2vw,27px);letter-spacing:.07em}
+.bottom-ribbon-text{font-size:clamp(24px,1.55vw,36px);font-weight:650}
+@media(min-width:1600px){.bottom-ribbon-label{font-size:clamp(21px,1.25vw,30px)}.bottom-ribbon-text{font-size:clamp(28px,1.65vw,40px)}}
+@media(min-width:2800px){.bottom-ribbon-label{font-size:32px}.bottom-ribbon-text{font-size:44px}}
+
 </style>
 
 <div class="shell">
@@ -331,6 +354,22 @@ html,body{height:100%;width:100%;background:var(--bg);color:var(--fg);font-famil
         <div class="gallery-footer">
           <div class="gallery-caption" id="galleryCaption"></div>
           <div class="gallery-controls" id="galleryControls"></div>
+        </div>
+      </div>
+    </div>
+    <div class="right-stack">
+      <div class="card projects-card">
+        <div class="card-hd"><div class="card-title"><span class="dot dot-blue"></span>Active R&amp;D Projects</div><div class="card-count" id="projectCount">—</div></div>
+        <div class="project-scroll-window" id="projectWindow"><div class="project-track" id="projectTrack"><div class="project-empty">Project information will appear here</div></div></div>
+      </div>
+      <div class="card stats-card">
+        <div class="card-hd"><div class="card-title"><span class="dot dot-green"></span>Department Snapshot</div><div class="card-count">Key figures</div></div>
+        <div class="stats-grid" id="statsGrid">
+          <div class="stat-tile"><div class="stat-value">—</div><div class="stat-label">Patents</div></div>
+          <div class="stat-tile"><div class="stat-value">—</div><div class="stat-label">Publications</div></div>
+          <div class="stat-tile"><div class="stat-value">—</div><div class="stat-label">B.Tech Students</div></div>
+          <div class="stat-tile"><div class="stat-value">—</div><div class="stat-label">M.Tech Students</div></div>
+          <div class="stat-tile" style="grid-column:1/3"><div class="stat-value">—</div><div class="stat-label">PhD Students</div></div>
         </div>
       </div>
     </div>
@@ -610,7 +649,9 @@ const SHEET_CSV_URLS={
   faculty:'https://docs.google.com/spreadsheets/d/e/2PACX-1vRl-RTpjBoFQVmrWrQkWbYqWG2O2KrwetgkdxbUE-QFYKsj9VlhEBfOyoHd5wZSEA/pub?gid=62525106&single=true&output=csv',
   meetings:'https://docs.google.com/spreadsheets/d/e/2PACX-1vRl-RTpjBoFQVmrWrQkWbYqWG2O2KrwetgkdxbUE-QFYKsj9VlhEBfOyoHd5wZSEA/pub?gid=799904583&single=true&output=csv',
   notices:'https://docs.google.com/spreadsheets/d/e/2PACX-1vRl-RTpjBoFQVmrWrQkWbYqWG2O2KrwetgkdxbUE-QFYKsj9VlhEBfOyoHd5wZSEA/pub?gid=1731995313&single=true&output=csv',
-  gallery:'https://docs.google.com/spreadsheets/d/e/2PACX-1vRl-RTpjBoFQVmrWrQkWbYqWG2O2KrwetgkdxbUE-QFYKsj9VlhEBfOyoHd5wZSEA/pub?gid=409418955&single=true&output=csv'
+  gallery:'https://docs.google.com/spreadsheets/d/e/2PACX-1vRl-RTpjBoFQVmrWrQkWbYqWG2O2KrwetgkdxbUE-QFYKsj9VlhEBfOyoHd5wZSEA/pub?gid=409418955&single=true&output=csv',
+  projects:null, // Published Projects tab CSV URL will be added after tab setup
+  statistics:null // Published Statistics tab CSV URL will be added after tab setup
 };
 
 function parseCsv(text){
@@ -662,8 +703,24 @@ function renderBottomRibbon(){
   ];
   document.getElementById('bottomRibbonText').textContent=items.join('     ◆     ');
 }
+let projectScrollTimer=null,projectOffset=0;
+function renderProjects(rows){
+ const track=document.getElementById('projectTrack');if(!track)return;
+ clearInterval(projectScrollTimer);projectOffset=0;
+ document.getElementById('projectCount').textContent=rows.length+' active';
+ if(!rows.length){track.innerHTML='<div class="project-empty">No active R&amp;D projects listed</div>';track.style.transform='translateY(0)';return;}
+ track.innerHTML=rows.map(r=>`<div class="project-entry"><div class="project-title">${escHtml(r.ProjectTitle||'Untitled project')}</div><div class="project-meta">${escHtml(r.PrincipalInvestigator||'PI not specified')} · ${escHtml(r.FundingAgency||'Funding agency not specified')}</div>${r.ProjectAmount?`<div class="project-meta project-amount">${escHtml(r.ProjectAmount)}</div>`:''}</div>`).join('');
+ const entries=[...track.children],visible=3;
+ function step(){const max=Math.max(0,entries.length-visible);projectOffset=projectOffset>=max?0:Math.min(max,projectOffset+visible);const y=entries.slice(0,projectOffset).reduce((sum,e)=>sum+e.offsetHeight,0);track.style.transform=`translateY(-${y}px)`;}
+ track.style.transform='translateY(0)';if(entries.length>visible)projectScrollTimer=setInterval(step,5000);
+}
+function renderStatistics(rows){
+ const values={};rows.forEach(r=>{const k=String(r.Parameter||r.Metric||'').trim().toLowerCase();if(k)values[k]=r.Value??r.Count??'—';});
+ const specs=[{keys:['patents','no. of patents','number of patents'],label:'Patents'},{keys:['publications','no. of publications','number of publications'],label:'Publications'},{keys:['b.tech students','btech students','b.tech'],label:'B.Tech Students'},{keys:['m.tech students','mtech students','m.tech'],label:'M.Tech Students'},{keys:['phd students','ph.d. students','phd'],label:'PhD Students'}];
+ document.getElementById('statsGrid').innerHTML=specs.map(s=>{const v=s.keys.map(k=>values[k]).find(v=>v!==undefined)??'—';return `<div class="stat-tile"><div class="stat-value">${escHtml(v)}</div><div class="stat-label">${s.label}</div></div>`;}).join('');
+}
 async function refreshDashboardContent(){
-  const results=await Promise.allSettled(Object.entries(SHEET_CSV_URLS).map(async ([key,url])=>[key,await fetchSheet(url)]));
+  const results=await Promise.allSettled(Object.entries(SHEET_CSV_URLS).filter(([,url])=>!!url).map(async ([key,url])=>[key,await fetchSheet(url)]));
   const sheets={};
   results.forEach(result=>{if(result.status==='fulfilled')sheets[result.value[0]]=result.value[1];});
   const facultyRows=realRows(sheets.faculty||[],['Dr. Example Faculty']);
@@ -689,6 +746,8 @@ async function refreshDashboardContent(){
   }
   const galleryRows=realRows(sheets.gallery||[],['Sample Department Event']);
   if(galleryRows.length&&window.updateGalleryFromSheet)window.updateGalleryFromSheet(galleryRows);
+  if(Object.prototype.hasOwnProperty.call(sheets,'projects'))renderProjects(realRows(sheets.projects,[]));
+  if(Object.prototype.hasOwnProperty.call(sheets,'statistics'))renderStatistics(sheets.statistics);
   renderBottomRibbon();
 }
 refreshDashboardContent().catch(err=>console.warn('Dashboard sheet sync failed; using built-in content.',err));
