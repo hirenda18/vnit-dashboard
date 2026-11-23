@@ -348,15 +348,6 @@ html,body{height:100%;width:100%;background:var(--bg);color:var(--fg);font-famil
    ✏️  EDIT THIS SECTION TO UPDATE CONTENT
    ══════════════════════════════════════════════════════ */
 
-const TICKER_MESSAGES = [
-  "📋 Please sign the Stipend Register before 5:00 PM today",
-  "📌 PhD viva of Mr. Ravi Sharma on 25 Nov 2026 at 11:00 AM, Seminar Hall",
-  "📢 Submit project reports to HOD office by 30 November 2026",
-  "🎓 Convocation rehearsal for final year students on 28 Nov at 9:00 AM",
-  "📋 Faculty meeting this Friday at 3:00 PM — attendance mandatory",
-  "🔧 Lab equipment maintenance: CNC lab closed on 22 Nov (Saturday)",
-];
-
 /* REAL faculty from vnit.ac.in/engineering/mech/faculty/ */
 const FACULTY = [
   { name:"Dr. A. B. Andhare", desig:"Professor & Head of the Department", area:"Machinery vibration, Condition monitoring, Machine Design", image:"https://vnit.ac.in/engineering/mech/wp-content/uploads/2023/08/IMG_7262-A-B-Andhare.jpg" },
@@ -449,10 +440,12 @@ function updateClock(){
 setInterval(updateClock,1000); updateClock();
 
 /* ══ TICKER ══ */
-(()=>{
-  const text=TICKER_MESSAGES.join('   ·   ');
-  document.getElementById('tickerInner').innerHTML=escHtml(text)+'   ·   '+escHtml(text);
-})();
+function renderNoticeTicker(){
+  const messages=ANNOUNCEMENTS.map(a=>`${a.icon||'📢'} ${a.title}${a.body?' — '+a.body:''}`);
+  const text=messages.length?messages.join('   ·   '):'No current notices';
+  document.getElementById('tickerInner').textContent=text+'   ·   '+text;
+}
+renderNoticeTicker();
 
 /* ══ FACULTY spotlight + scroll ══ */
 const ACCENT_COLORS=['#1a56db','#7c3aed','#0891b2','#059669','#d97706','#dc2626','#9333ea','#0284c7','#15803d','#b45309'];
@@ -617,6 +610,7 @@ function renderAnnouncementsFromData(){
       <div><div class="announce-title">${escHtml(a.title)}</div><div class="announce-body">${escHtml(a.body)}</div>
       <div class="announce-meta"><span class="announce-tag tag-${a.type}">${a.type.toUpperCase()}</span><span class="announce-date">${escHtml(a.date)}</span></div></div>
     </div>`).join('');
+  renderNoticeTicker();
 }
 function renderBottomRibbon(){
   const items=[
