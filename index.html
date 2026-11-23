@@ -247,8 +247,9 @@ html,body{height:100%;width:100%;background:var(--bg);color:var(--fg);font-famil
 .bottom-ribbon{display:flex;align-items:center;gap:16px;min-width:0;overflow:hidden;background:#102b55;color:#fff;border-radius:var(--radius);padding:0 20px;border:1px solid #244a7e}
 .bottom-ribbon-label{flex-shrink:0;font-size:15px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:#ffd36a;border-right:1px solid rgba(255,255,255,.25);padding-right:16px}
 .bottom-ribbon-track{min-width:0;overflow:hidden;flex:1}
-.bottom-ribbon-text{display:inline-block;white-space:nowrap;font-size:18px;font-weight:600;letter-spacing:.01em;animation:bottom-news-scroll 110s linear infinite}
-@keyframes bottom-news-scroll{0%{transform:translateX(100%)}100%{transform:translateX(-100%)}}
+.bottom-ribbon-text{display:flex;width:max-content;white-space:nowrap;font-size:18px;font-weight:600;letter-spacing:.01em;animation:bottom-news-scroll 110s linear infinite;will-change:transform}
+.bottom-ribbon-copy{display:block;flex:0 0 auto;padding-right:5vw}
+@keyframes bottom-news-scroll{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
 @media(min-width:1600px){
  .shell{grid-template-rows:clamp(88px,5.2vw,116px) minmax(0,1fr) clamp(72px,4.2vw,100px);padding:clamp(16px,1.1vw,28px);gap:clamp(18px,1vw,24px)}
  .main{grid-template-columns:minmax(360px,24vw) minmax(0,1fr) minmax(360px,24vw);gap:clamp(18px,1vw,24px)}
@@ -460,13 +461,19 @@ const GUEST_LECTURES = [
   { date:"10 Dec", title:"Robotics & Automation in Modern Manufacturing", speaker:"Dr. Priya Mehta, CSIR-CMTI" },
 ];
 
+function setBottomRibbonItems(items){
+  const el=document.getElementById('bottomRibbonText');
+  const content=escHtml(items.join('     ◆     ')||'No current schedule or notices');
+  el.innerHTML=`<span class="bottom-ribbon-copy">${content}</span><span class="bottom-ribbon-copy" aria-hidden="true">${content}</span>`;
+}
+
 /* ══ BOTTOM NEWS RIBBON ══ */
 (()=>{
   const items=[
     ...MEETINGS.map(m=>`🗓️ ${m.time} — ${m.title} (${m.sub})`),
     ...ANNOUNCEMENTS.map(a=>`📢 ${a.type.toUpperCase()}: ${a.title} — ${a.body}`)
   ];
-  document.getElementById('bottomRibbonText').textContent=items.join('     ◆     ');
+  setBottomRibbonItems(items);
 })();
 
 /* ══ UTILITY ══ */
@@ -703,7 +710,7 @@ function renderBottomRibbon(){
     ...MEETINGS.map(m=>`🗓️ ${m.time} — ${m.title} (${m.sub})`),
     ...ANNOUNCEMENTS.map(a=>`📢 ${a.type.toUpperCase()}: ${a.title} — ${a.body}`)
   ];
-  document.getElementById('bottomRibbonText').textContent=items.join('     ◆     ');
+  setBottomRibbonItems(items);
 }
 let projectScrollTimer=null,projectOffset=0;
 function renderProjects(rows){
