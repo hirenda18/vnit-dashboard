@@ -539,18 +539,16 @@ renderMeetings(); setInterval(renderMeetings,60000);
 
 /* ══ PHOTO GALLERY ══ */
 (()=>{
-  // Add approved event photographs to the image field when they are available.
-  // Until then, a clean category placeholder keeps the gallery layout ready.
-  const slides=[
+  let slides=[
     ...ACHIEVEMENTS.map(a=>({category:'Achievement',title:a.title,meta:a.who,caption:a.desc,icon:a.emoji,image:a.image||''})),
     ...GUEST_LECTURES.map(g=>({category:g.featured?'Featured Guest Lecture':'Upcoming Event',title:g.title,meta:[g.speaker,g.when||g.date].filter(Boolean).join(' · '),caption:g.venue||'Department of Mechanical Engineering',icon:'🎤',image:g.image||''}))
   ];
   const stage=document.getElementById('galleryStage');
   const caption=document.getElementById('galleryCaption');
   const controls=document.getElementById('galleryControls');
-  document.getElementById('galleryCount').textContent=`${slides.length} items`;
-  let current=0, timer;
+  let current=0;
   function show(index){
+    if(!slides.length){stage.innerHTML='<div class="gallery-placeholder"><div class="gallery-placeholder-icon">📷</div><div class="gallery-placeholder-label">No gallery items</div></div>';caption.textContent='';controls.innerHTML='';document.getElementById('galleryCount').textContent='0 items';return;}
     current=(index+slides.length)%slides.length;
     const s=slides[current];
     const visual=s.image
@@ -559,11 +557,104 @@ renderMeetings(); setInterval(renderMeetings,60000);
     stage.innerHTML=visual+`<div class="gallery-overlay"><div class="gallery-category">${escHtml(s.category)}</div><div class="gallery-overlay-title">${escHtml(s.title)}</div><div class="gallery-overlay-meta">${escHtml(s.meta)}</div></div>`;
     caption.textContent=s.caption;
     controls.innerHTML=slides.map((_,i)=>`<button class="gallery-dot${i===current?' active':''}" aria-label="Show gallery item ${i+1}" onclick="window.showGallerySlide(${i})"></button>`).join('');
+    document.getElementById('galleryCount').textContent=`${slides.length} items`;
   }
   window.showGallerySlide=show;
+  window.updateGalleryFromSheet=function(rows){
+    slides=rows.map(g=>({category:g.Category,title:g.Title,meta:g.Meta,caption:g.Caption,icon:({Event:'📸',Achievement:'🏆',Workshop:'🛠️',Visit:'🏭',Lecture:'🎓'}[g.Category]||'📷'),image:g.ImageURL||''}));
+    current=0;show(0);
+  };
   show(0);
-  timer=setInterval(()=>show(current+1),8000);
+  setInterval(()=>show(current+1),8000);
 })();
+
+/* ══ GOOGLE SHEETS CONTENT SYNC ══
+   Published CSV tabs are read-only data sources. Keep the existing
+   on-page content as a fallback if a sheet is empty or unavailable. */
+const SHEET_CSV_URLS={
+  faculty:'https://docs.google.com/spreadsheets/d/e/2PACX-1vRl-RTpjBoFQVmrWrQkWbYqWG2O2KrwetgkdxbUE-QFYKsj9VlhEBfOyoHd5wZSEA/pub?gid=62525106&single=true&output=csv',
+  meetings:'https://docs.google.com/spreadsheets/d/e/2PACX-1vRl-RTpjBoFQVmrWrQkWbYqWG2O2KrwetgkdxbUE-QFYKsj9VlhEBfOyoHd5wZSEA/pub?gid=799904583&single=true&output=csv',
+  notices:'https://docs.google.com/spreadsheets/d/e/2PACX-1vRl-RTpjBoFQVmrWrQkWbYqWG2O2KrwetgkdxbUE-QFYKsj9VlhEBfOyoHd5wZSEA/pub?gid=1731995313&single=true&output=csv',
+  gallery:'https://docs.google.com/spreadsheets/d/e/2PACX-1vRl-RTpjBoFQVmrWrQkWbYqWG2O2KrwetgkdxbUE-QFYKsj9VlhEBfOyoHd5wZSEA/pub?gid=409418955&single=true&output=csv'
+};
+
+function parseCsv(text){
+  const rows=[];let row=[],cell='',quoted=false;
+  for(let i=0;i<text.length;i++){
+    const c=text[i],next=text[i+1];
+    if(quoted){
+      if(c==='"'&&next==='"'){cell+='"';i++;}
+      else if(c==='"')quoted=false;
+      else cell+=c;
+    }else if(c==='"')quoted=true;
+    else if(c===','){row.push(cell);cell='';}
+    else if(c==='\n'){row.push(cell);rows.push(row);row=[];cell='';}
+    else if(c!=='\r')cell+=c;
+  }
+  if(cell.length||row.length){row.push(cell);rows.push(row);}
+  if(!rows.length)return [];
+  const headers=rows.shift().map((h,i)=>(i===0?h.replace(/^\uFEFF/,''):h).trim());
+  return rows.filter(r=>r.some(v=>v.trim()!=='')).map(r=>{
+    const obj={};headers.forEach((h,i)=>obj[h]=(r[i]||'').trim());return obj;
+  });
+}
+function isActive(row){
+  return ['true','1','yes','y'].includes(String(row.Active||'').trim().toLowerCase());
+}
+function realRows(rows,placeholderValues){
+  return rows.filter(r=>isActive(r)&&!placeholderValues.includes(String(r.Name||r.Title||'').trim()));
+}
+async function fetchSheet(url){
+  const response=await fetch(url+'&_='+Date.now(),{cache:'no-store'});
+  if(!response.ok)throw new Error('CSV request failed: '+response.status);
+  return parseCsv(await response.text());
+}
+function renderAnnouncementsFromData(){
+  document.getElementById('announceCount').textContent=`${ANNOUNCEMENTS.length} items`;
+  document.getElementById('announceList').innerHTML=ANNOUNCEMENTS.map(a=>`
+    <div class="announce-item">
+      <div class="announce-icon ${a.type}">${escHtml(a.icon)}</div>
+      <div><div class="announce-title">${escHtml(a.title)}</div><div class="announce-body">${escHtml(a.body)}</div>
+      <div class="announce-meta"><span class="announce-tag tag-${a.type}">${a.type.toUpperCase()}</span><span class="announce-date">${escHtml(a.date)}</span></div></div>
+    </div>`).join('');
+}
+function renderBottomRibbon(){
+  const items=[
+    ...MEETINGS.map(m=>`🗓️ ${m.time} — ${m.title} (${m.sub})`),
+    ...ANNOUNCEMENTS.map(a=>`📢 ${a.type.toUpperCase()}: ${a.title} — ${a.body}`),
+    ...GUEST_LECTURES.map(g=>`🎓 ${g.title} — ${g.speaker} · ${g.when||g.date||''}`)
+  ];
+  document.getElementById('bottomRibbonText').textContent=items.join('     ◆     ');
+}
+async function refreshDashboardContent(){
+  const results=await Promise.allSettled(Object.entries(SHEET_CSV_URLS).map(async ([key,url])=>[key,await fetchSheet(url)]));
+  const sheets={};
+  results.forEach(result=>{if(result.status==='fulfilled')sheets[result.value[0]]=result.value[1];});
+  const facultyRows=realRows(sheets.faculty||[],['Dr. Example Faculty']);
+  if(facultyRows.length){
+    FACULTY.splice(0,FACULTY.length,...facultyRows.map(r=>({name:r.Name,desig:r.Designation,area:r.Area,image:r.ImageURL||''})));
+    currentFaculty=0;buildTrack();applyFaculty();clearInterval(facultyTimer);startAuto();
+  }
+  const meetingRows=realRows(sheets.meetings||[],['Department Meeting']);
+  if(meetingRows.length){
+    MEETINGS.splice(0,MEETINGS.length,...meetingRows.map(r=>({time:r.Time,title:r.Title,sub:r.Details,dur:Number(r.DurationMin)||60})));
+    renderMeetings();
+  }
+  const noticeRows=realRows(sheets.notices||[],['Sample notice title']);
+  if(noticeRows.length){
+    ANNOUNCEMENTS.splice(0,ANNOUNCEMENTS.length,...noticeRows.map(r=>{
+      const raw=String(r.Type||'notice').toLowerCase();
+      const type=['urgent','info','notice'].includes(raw)?raw:'notice';
+      return {type,icon:r.Icon||'📢',title:r.Title,body:r.Message,date:r.Date};
+    }));
+    renderAnnouncementsFromData();
+  }
+  const galleryRows=realRows(sheets.gallery||[],['Sample Department Event']);
+  if(galleryRows.length&&window.updateGalleryFromSheet)window.updateGalleryFromSheet(galleryRows);
+  renderBottomRibbon();
+}
+refreshDashboardContent().catch(err=>console.warn('Dashboard sheet sync failed; using built-in content.',err));
+setInterval(()=>refreshDashboardContent().catch(err=>console.warn('Dashboard sheet refresh failed.',err)),60000);
 </script>
 
 </body></html>
