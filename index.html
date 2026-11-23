@@ -429,9 +429,17 @@ const GUEST_LECTURES = [
 function escHtml(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 
 /* ══ CLOCK ══ */
+function formatTime12(value){
+  const match=String(value||'').trim().match(/^(\\d{1,2}):(\\d{2})(?::\\d{2})?$/);
+  if(!match) return String(value||'');
+  const hour=Number(match[1]), minute=match[2];
+  const suffix=hour>=12?'PM':'AM';
+  return `${hour%12||12}:${minute} ${suffix}`;
+}
 function updateClock(){
   const now=new Date();
-  document.getElementById('clockTime').textContent=[now.getHours(),now.getMinutes(),now.getSeconds()].map(n=>String(n).padStart(2,'0')).join(':');
+  const hour=now.getHours();
+  document.getElementById('clockTime').textContent=`${hour%12||12}:${String(now.getMinutes()).padStart(2,'0')}:${String(now.getSeconds()).padStart(2,'0')} ${hour>=12?'PM':'AM'}`;
   const days=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
   const months=['January','February','March','April','May','June','July','August','September','October','November','December'];
   document.getElementById('clockDate').textContent=`${days[now.getDay()]}, ${now.getDate()} ${months[now.getMonth()]} ${now.getFullYear()}`;
@@ -511,7 +519,7 @@ function renderMeetings(){
     const [h,mi]=m.time.split(':').map(Number), start=h*60+mi, end=start+m.dur;
     const isNow=nowMins>=start&&nowMins<end, isPast=nowMins>=end;
     return `<div class="meeting-item">
-      <div class="meeting-time ${isNow?'now':isPast?'past':''}">${escHtml(m.time)}</div>
+      <div class="meeting-time ${isNow?'now':isPast?'past':''}">${escHtml(formatTime12(m.time))}</div>
       <div class="meeting-bar ${isNow?'now':isPast?'done':''}"></div>
       <div><div class="meeting-title ${isPast?'done':''}">${escHtml(m.title)}${isNow?'<span class="now-pill">NOW</span>':''}</div><div class="meeting-sub">${escHtml(m.sub)}</div></div>
     </div>`;
