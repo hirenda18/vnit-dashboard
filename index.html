@@ -438,13 +438,7 @@ const ANNOUNCEMENTS = [
   { type:"notice", icon:"🔧", title:"CNC Lab Closed — Maintenance", body:"CNC and Advanced Manufacturing Lab will remain closed on 22 November (Saturday) for annual maintenance.", date:"20 Nov 2026" },
 ];
 
-const ACHIEVEMENTS = [
-  { emoji:"🏆", title:"Best Paper Award — AIMTDR 2026", desc:"Received Best Paper Award at the 10th International Conference on Advances in Manufacturing Technology.", who:"Dr. S. M. Deshmukh & Team" },
-  { emoji:"🥇", title:"GATE 2026 — AIR 12", desc:"Secured All India Rank 12 in GATE 2026 (Mechanical Engineering) out of 2.1 lakh candidates.", who:"Mr. Aniket Raut, B.Tech Final Year" },
-  { emoji:"🔬", title:"DST SERB Research Grant Awarded", desc:"Received ₹28 Lakhs research grant from DST-SERB for project on sustainable manufacturing processes.", who:"Dr. P. R. Vaidya" },
-  { emoji:"🌍", title:"International Collaboration — TU Munich", desc:"MoU signed with Technical University of Munich for student & faculty exchange programme 2026-28.", who:"Department of Mechanical Engineering" },
-  { emoji:"🎖️", title:"Smart India Hackathon 2026 — Finalists", desc:"Team MechVNIT selected among top 10 finalists in Smart India Hackathon 2026 for their EV cooling solution.", who:"5 B.Tech Students — Team MechVNIT" },
-];
+// Gallery achievements are managed only through the published Google Sheets tab.
 
 const GUEST_LECTURES = [
   { featured:true, title:"Advances in Additive Manufacturing for Aerospace Applications", speaker:"Prof. Ramesh K. Singh, IIT Bombay", when:"25 November 2026 · 11:00 AM", venue:"Seminar Hall, Mech Dept" },
@@ -612,10 +606,8 @@ renderMeetings(); setInterval(renderMeetings,60000);
 
 /* ══ PHOTO GALLERY ══ */
 (()=>{
-  let slides=[
-    ...ACHIEVEMENTS.map(a=>({category:'Achievement',title:a.title,meta:a.who,caption:a.desc,icon:a.emoji,image:a.image||''})),
-    ...GUEST_LECTURES.map(g=>({category:g.featured?'Featured Guest Lecture':'Upcoming Event',title:g.title,meta:[g.speaker,g.when||g.date].filter(Boolean).join(' · '),caption:g.venue||'Department of Mechanical Engineering',icon:'🎤',image:g.image||''}))
-  ];
+  // Start empty; display only entries loaded from the Gallery Google Sheet.
+  let slides=[];
   const stage=document.getElementById('galleryStage');
   const caption=document.getElementById('galleryCaption');
   const controls=document.getElementById('galleryControls');
@@ -635,7 +627,7 @@ renderMeetings(); setInterval(renderMeetings,60000);
   }
   window.showGallerySlide=show;
   window.updateGalleryFromSheet=function(rows){
-    slides=rows.map(g=>({category:g.Category,title:g.Title,meta:g.Meta,caption:g.Caption,icon:({Event:'📸',Achievement:'🏆',Workshop:'🛠️',Visit:'🏭',Lecture:'🎓'}[g.Category]||'📷'),image:g.ImageURL||''}));
+    slides=rows.map(g=>({category:g.Category||'Gallery',title:g.Title||'Department Photo',meta:g.Meta||'',caption:g.Caption||'',icon:({Event:'📸',Achievement:'🏆',Workshop:'🛠️',Visit:'🏭',Lecture:'🎓'}[g.Category]||'📷'),image:g.ImageURL||''}));
     current=0;show(0);
   };
   show(0);
@@ -744,8 +736,11 @@ async function refreshDashboardContent(){
     }));
     renderAnnouncementsFromData();
   }
-  const galleryRows=realRows(sheets.gallery||[],['Sample Department Event']);
-  if(galleryRows.length&&window.updateGalleryFromSheet)window.updateGalleryFromSheet(galleryRows);
+  // A successfully loaded Gallery sheet is authoritative, including when it has zero active rows.
+  if(Object.prototype.hasOwnProperty.call(sheets,'gallery')&&window.updateGalleryFromSheet){
+    const galleryRows=realRows(sheets.gallery,[]);
+    window.updateGalleryFromSheet(galleryRows);
+  }
   if(Object.prototype.hasOwnProperty.call(sheets,'projects'))renderProjects(realRows(sheets.projects,[]));
   if(Object.prototype.hasOwnProperty.call(sheets,'statistics'))renderStatistics(sheets.statistics);
   renderBottomRibbon();
