@@ -640,8 +640,10 @@ async function refreshDashboardContent(){
     MEETINGS.splice(0,MEETINGS.length,...meetingRows.map(r=>({time:r.Time,title:r.Title,sub:r.Details,dur:Number(r.DurationMin)||60})));
     renderMeetings();
   }
-  const noticeRows=realRows(sheets.notices||[],['Sample notice title']);
-  if(noticeRows.length){
+  // Replace built-in notices whenever the published sheet loads successfully,
+  // including when it contains zero active rows. Keep fallback notices only on fetch failure.
+  if(Object.prototype.hasOwnProperty.call(sheets,'notices')){
+    const noticeRows=realRows(sheets.notices,['Sample notice title']);
     ANNOUNCEMENTS.splice(0,ANNOUNCEMENTS.length,...noticeRows.map(r=>{
       const raw=String(r.Type||'notice').toLowerCase();
       const type=['urgent','info','notice'].includes(raw)?raw:'notice';
