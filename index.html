@@ -287,6 +287,27 @@ html,body{height:100%;width:100%;background:var(--bg);color:var(--fg);font-famil
 @media(min-width:1600px){.bottom-ribbon-label{font-size:clamp(21px,1.25vw,30px)}.bottom-ribbon-text{font-size:clamp(28px,1.65vw,40px)}}
 @media(min-width:2800px){.bottom-ribbon-label{font-size:32px}.bottom-ribbon-text{font-size:44px}}
 
+
+/* Subtle notice-board colour system */
+.card-hd{border-bottom:1px solid var(--border)}
+.faculty-card{background:#f5f8ff;border-color:#cbd8ee}
+.faculty-card .card-hd{background:#eaf1ff;border-bottom-color:#d5e1f5}
+.main>.card:not(.faculty-card):not(.gallery-card){background:#fffaf0;border-color:#eadbb8}
+.main>.card:nth-child(2) .card-hd{background:#fff3d9;border-bottom-color:#f0dfb7}
+.main>.card:nth-child(3) .card-hd{background:#f2edff;border-bottom-color:#dfd5f6}
+.gallery-card{background:#f0faf8;border-color:#c8e5df}
+.gallery-card .card-hd{background:#e2f4ef;border-bottom-color:#cde8df}
+.projects-card{background:#f1f6ff;border-color:#ccdaf1}
+.projects-card .card-hd{background:#e4edff;border-bottom-color:#d1def5}
+.stats-card{background:#f2f8f1;border-color:#d1e3cd}
+.stats-card .card-hd{background:#e6f2e2;border-bottom-color:#d5e8d0}
+.notice-empty{padding:24px;text-align:center;color:var(--fg3);font-size:18px}
+.bottom-ribbon{gap:clamp(10px,.8vw,18px)}
+.footer-clock{display:flex;flex-direction:column;align-items:flex-end;justify-content:center;flex-shrink:0;border-left:1px solid rgba(255,255,255,.25);padding-left:clamp(10px,.8vw,18px);min-width:clamp(120px,10vw,190px)}
+.footer-clock .clock-time{font-size:clamp(22px,1.5vw,34px);color:#fff;letter-spacing:-.02em}
+.footer-clock .clock-date{font-size:clamp(11px,.65vw,15px);color:#d6e2f5;margin-top:0;white-space:nowrap}
+@media(min-width:2800px){.footer-clock .clock-time{font-size:38px}.footer-clock .clock-date{font-size:17px}}
+
 </style>
 
 <div class="shell">
@@ -301,10 +322,6 @@ html,body{height:100%;width:100%;background:var(--bg);color:var(--fg);font-famil
     <div class="header-ticker">
       <span class="ticker-label">📢 Notice</span>
       <div class="ticker-track"><div class="ticker-inner" id="tickerInner"></div></div>
-    </div>
-    <div class="header-clock">
-      <div class="clock-time" id="clockTime">00:00:00</div>
-      <div class="clock-date" id="clockDate">—</div>
     </div>
   </header>
 
@@ -377,6 +394,7 @@ html,body{height:100%;width:100%;background:var(--bg);color:var(--fg);font-famil
   <div class="bottom-ribbon" role="region" aria-label="Department schedule and notices">
     <div class="bottom-ribbon-label">📢 Schedule &amp; Notices</div>
     <div class="bottom-ribbon-track"><div class="bottom-ribbon-text" id="bottomRibbonText">Department updates will appear here</div></div>
+    <div class="header-clock footer-clock"><div class="clock-time" id="clockTime">00:00</div><div class="clock-date" id="clockDate">—</div></div>
   </div>
 </div>
 
@@ -430,13 +448,7 @@ const MEETINGS = [
   { time:"17:00", title:"Faculty Council — End of Month", sub:"All teaching staff · Seminar Hall", dur:60 },
 ];
 
-const ANNOUNCEMENTS = [
-  { type:"urgent", icon:"📋", title:"Sign Stipend Register Today", body:"All PhD scholars must sign the stipend register at the department office before 5:00 PM.", date:"21 Nov 2026" },
-  { type:"notice", icon:"📝", title:"Project Report Submission Deadline", body:"B.Tech final year project reports to be submitted in hard + soft copy by 30 Nov 2026.", date:"20 Nov 2026" },
-  { type:"info",   icon:"🏛️", title:"NIRF Ranking Data Collection", body:"Faculty requested to update their publications and project data in the NIRF portal by 25 Nov.", date:"19 Nov 2026" },
-  { type:"urgent", icon:"🎓", title:"Convocation Rehearsal", body:"Final year graduating students — mandatory rehearsal on 28 Nov 2026 at 9:00 AM, Main Ground.", date:"21 Nov 2026" },
-  { type:"notice", icon:"🔧", title:"CNC Lab Closed — Maintenance", body:"CNC and Advanced Manufacturing Lab will remain closed on 22 November (Saturday) for annual maintenance.", date:"20 Nov 2026" },
-];
+const ANNOUNCEMENTS = [];
 
 // Gallery achievements are managed only through the published Google Sheets tab.
 
@@ -452,8 +464,7 @@ const GUEST_LECTURES = [
 (()=>{
   const items=[
     ...MEETINGS.map(m=>`🗓️ ${m.time} — ${m.title} (${m.sub})`),
-    ...ANNOUNCEMENTS.map(a=>`📢 ${a.type.toUpperCase()}: ${a.title} — ${a.body}`),
-    ...GUEST_LECTURES.map(g=>`🎓 ${g.title} — ${g.speaker} · ${g.when||g.date||''}`)
+    ...ANNOUNCEMENTS.map(a=>`📢 ${a.type.toUpperCase()}: ${a.title} — ${a.body}`)
   ];
   document.getElementById('bottomRibbonText').textContent=items.join('     ◆     ');
 })();
@@ -684,14 +695,13 @@ function renderAnnouncementsFromData(){
       <div class="announce-icon ${a.type}">${escHtml(a.icon)}</div>
       <div><div class="announce-title">${escHtml(a.title)}</div><div class="announce-body">${escHtml(a.body)}</div>
       <div class="announce-meta"><span class="announce-tag tag-${a.type}">${a.type.toUpperCase()}</span><span class="announce-date">${escHtml(a.date)}</span></div></div>
-    </div>`).join('');
+    </div>`).join('') || '<div class="notice-empty">No current notices</div>';
   renderNoticeTicker();
 }
 function renderBottomRibbon(){
   const items=[
     ...MEETINGS.map(m=>`🗓️ ${m.time} — ${m.title} (${m.sub})`),
-    ...ANNOUNCEMENTS.map(a=>`📢 ${a.type.toUpperCase()}: ${a.title} — ${a.body}`),
-    ...GUEST_LECTURES.map(g=>`🎓 ${g.title} — ${g.speaker} · ${g.when||g.date||''}`)
+    ...ANNOUNCEMENTS.map(a=>`📢 ${a.type.toUpperCase()}: ${a.title} — ${a.body}`)
   ];
   document.getElementById('bottomRibbonText').textContent=items.join('     ◆     ');
 }
