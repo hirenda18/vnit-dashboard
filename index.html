@@ -428,6 +428,39 @@ const GUEST_LECTURES = [
 /* ══ UTILITY ══ */
 function escHtml(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 
+// Accept ordinary Google Drive share links in the Sheets ImageURL column.
+// Drive files must be shared as "Anyone with the link — Viewer".
+function getDriveImageId(value){
+  const raw=String(value||'').trim();
+  if(!raw)return '';
+  try{
+    const url=new URL(raw);
+    if(!/(^|\\.)drive\\.google\\.com$/i.test(url.hostname)&&!/(^|\\.)docs\\.google\\.com$/i.test(url.hostname))return '';
+    const pathMatch=url.pathname.match(/\\/file\\/d\\/([^/]+)/i);
+    return (pathMatch?pathMatch[1]:url.searchParams.get('id'))||'';
+  }catch(e){return '';}
+}
+function normalizeImageUrl(value){
+  const raw=String(value||'').trim(), id=getDriveImageId(raw);
+  return id?'https://lh3.googleusercontent.com/d/'+encodeURIComponent(id):raw;
+}
+window.handleDashboardImageError=function(img){
+  const id=img.dataset.driveId;
+  if(id&&!img.dataset.driveFallback){
+    img.dataset.driveFallback='1';
+    img.src='https://drive.google.com/uc?export=view&id='+encodeURIComponent(id);
+    return;
+  }
+  if(img.dataset.fallbackType==='gallery'){
+    const icon=img.dataset.fallbackIcon||'📷';
+    img.insertAdjacentHTML('beforebegin',`<div class="gallery-placeholder"><div class="gallery-placeholder-icon">${escHtml(icon)}</div><div class="gallery-placeholder-label">Photograph to be added</div></div>`);
+    img.remove();
+  }else{
+    img.style.display='none';
+    img.parentElement.textContent=img.dataset.fallbackText||'';
+  }
+};
+
 /* ══ CLOCK ══ */
 function formatTime12(value){
   const match=String(value||'').trim().match(/^(\\d{1,2}):(\\d{2})(?::\\d{2})?$/);
@@ -466,7 +499,7 @@ function buildTrack(){
   document.getElementById('facultyCount').textContent=`${FACULTY.length} Faculty`;
   document.getElementById('facultyTrack').innerHTML=FACULTY.map((f,i)=>{
     const ini=getInitials(f.name), color=ACCENT_COLORS[i%ACCENT_COLORS.length];
-    const img=f.image?`<img src="${escHtml(f.image)}" alt="${escHtml(f.name)}" onerror="this.style.display='none';this.parentElement.textContent='${escHtml(ini)}'">`:escHtml(ini);
+    const driveId=getDriveImageId(f.image); const img=f.image?`<img src="${escHtml(normalizeImageUrl(f.image))}" data-drive-id="${escHtml(driveId)}" data-fallback-text="${escHtml(ini)}" alt="${escHtml(f.name)}" onerror="window.handleDashboardImageError(this)">`:escHtml(ini);
     return `<div class="faculty-row${i===0?' active':''}" data-idx="${i}" onclick="selectFaculty(${i})">
       <div class="faculty-row-avatar" style="background:${color};color:#fff">${img}</div>
       <div><div class="faculty-row-name">${escHtml(f.name)}</div><div class="faculty-row-desig">${escHtml(f.desig)}</div></div>
@@ -476,7 +509,7 @@ function buildTrack(){
 
 function buildSpotlight(f,i){
   const ini=getInitials(f.name), color=ACCENT_COLORS[i%ACCENT_COLORS.length];
-  const img=f.image?`<img src="${escHtml(f.image)}" alt="${escHtml(f.name)}" onerror="this.style.display='none';this.parentElement.textContent='${escHtml(ini)}'">`:escHtml(ini);
+  const driveId=getDriveImageId(f.image); const img=f.image?`<img src="${escHtml(normalizeImageUrl(f.image))}" data-drive-id="${escHtml(driveId)}" data-fallback-text="${escHtml(ini)}" alt="${escHtml(f.name)}" onerror="window.handleDashboardImageError(this)">`:escHtml(ini);
   const tags=f.area.split(',').slice(0,3).map(t=>`<span class="faculty-spotlight-tag">${escHtml(t.trim())}</span>`).join('');
   return `<div class="faculty-spotlight-avatar" style="border-color:${color};color:#fff">${img}</div>
     <div class="faculty-spotlight-info">
@@ -552,8 +585,9 @@ renderMeetings(); setInterval(renderMeetings,60000);
     if(!slides.length){stage.innerHTML='<div class="gallery-placeholder"><div class="gallery-placeholder-icon">📷</div><div class="gallery-placeholder-label">No gallery items</div></div>';caption.textContent='';controls.innerHTML='';document.getElementById('galleryCount').textContent='0 items';return;}
     current=(index+slides.length)%slides.length;
     const s=slides[current];
+    const driveId=getDriveImageId(s.image);
     const visual=s.image
-      ? `<img src="${escHtml(s.image)}" alt="${escHtml(s.title)}" onerror="this.remove();this.parentElement.insertAdjacentHTML('afterbegin','<div class=&quot;gallery-placeholder&quot;><div class=&quot;gallery-placeholder-icon&quot;>${escHtml(s.icon)}</div><div class=&quot;gallery-placeholder-label&quot;>Photograph to be added</div></div>')">`
+      ? `<img src="${escHtml(normalizeImageUrl(s.image))}" data-drive-id="${escHtml(driveId)}" data-fallback-type="gallery" data-fallback-icon="${escHtml(s.icon)}" alt="${escHtml(s.title)}" onerror="window.handleDashboardImageError(this)">`
       : `<div class="gallery-placeholder"><div class="gallery-placeholder-icon">${escHtml(s.icon)}</div><div class="gallery-placeholder-label">Photograph to be added</div></div>`;
     stage.innerHTML=visual+`<div class="gallery-overlay"><div class="gallery-category">${escHtml(s.category)}</div><div class="gallery-overlay-title">${escHtml(s.title)}</div><div class="gallery-overlay-meta">${escHtml(s.meta)}</div></div>`;
     caption.textContent=s.caption;
