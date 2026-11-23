@@ -289,25 +289,37 @@ html,body{height:100%;width:100%;background:var(--bg);color:var(--fg);font-famil
 @media(min-width:2800px){.bottom-ribbon-label{font-size:32px}.bottom-ribbon-text{font-size:44px}}
 
 
-/* Subtle notice-board colour system */
-.card-hd{border-bottom:1px solid var(--border)}
-.faculty-card{background:#f5f8ff;border-color:#cbd8ee}
-.faculty-card .card-hd{background:#eaf1ff;border-bottom-color:#d5e1f5}
-.main>.card:not(.faculty-card):not(.gallery-card){background:#fffaf0;border-color:#eadbb8}
-.main>.card:nth-child(2) .card-hd{background:#fff3d9;border-bottom-color:#f0dfb7}
-.main>.card:nth-child(3) .card-hd{background:#f2edff;border-bottom-color:#dfd5f6}
-.gallery-card{background:#f0faf8;border-color:#c8e5df}
-.gallery-card .card-hd{background:#e2f4ef;border-bottom-color:#cde8df}
-.projects-card{background:#f1f6ff;border-color:#ccdaf1}
-.projects-card .card-hd{background:#e4edff;border-bottom-color:#d1def5}
-.stats-card{background:#f2f8f1;border-color:#d1e3cd}
-.stats-card .card-hd{background:#e6f2e2;border-bottom-color:#d5e8d0}
+/* Vibrant, high-contrast departmental notice-board palette */
+.card-hd{border-bottom:1px solid var(--border);font-weight:700}
+.faculty-card{background:#f1f5ff;border:1px solid #9db7f0;border-top:5px solid #315fce}
+.faculty-card .card-hd{background:linear-gradient(100deg,#315fce,#477fe8);color:#fff;border-bottom:0}
+.faculty-card .card-hd .card-title,.faculty-card .card-hd .card-count{color:#fff}
+.main>.card:nth-child(2){background:#fff9eb;border:1px solid #f0cd79;border-top:5px solid #e69a16}
+.main>.card:nth-child(2) .card-hd{background:linear-gradient(100deg,#d9850b,#f0ad32);color:#fff;border-bottom:0}
+.main>.card:nth-child(2) .card-hd .card-title,.main>.card:nth-child(2) .card-hd .card-count{color:#fff}
+.main>.card:nth-child(3){background:#fff1f2;border:1px solid #f0a5ad;border-top:5px solid #d83d55}
+.main>.card:nth-child(3) .card-hd{background:linear-gradient(100deg,#c92f4b,#e65369);color:#fff;border-bottom:0}
+.main>.card:nth-child(3) .card-hd .card-title,.main>.card:nth-child(3) .card-hd .card-count{color:#fff}
+.gallery-card{background:#effbf8;border:1px solid #8bd3c1;border-top:5px solid #159879}
+.gallery-card .card-hd{background:linear-gradient(100deg,#087e69,#18a88a);color:#fff;border-bottom:0}
+.gallery-card .card-hd .card-title,.gallery-card .card-hd .card-count{color:#fff}
+.projects-card{background:#eff6ff;border:1px solid #9fc5f4;border-top:5px solid #2676cf}
+.projects-card .card-hd{background:linear-gradient(100deg,#1764b4,#3288dc);color:#fff;border-bottom:0}
+.projects-card .card-hd .card-title,.projects-card .card-hd .card-count{color:#fff}
+.stats-card{background:#f3f9ed;border:1px solid #b6d98e;border-top:5px solid #659d2e}
+.stats-card .card-hd{background:linear-gradient(100deg,#4f8422,#78ad3b);color:#fff;border-bottom:0}
+.stats-card .card-hd .card-title,.stats-card .card-hd .card-count{color:#fff}
+.stat-tile{background:#fff;border-color:#c8dfb3}
+.stat-value{color:#4d8a24}
+.announce-tag{font-weight:800}
 .notice-empty{padding:24px;text-align:center;color:var(--fg3);font-size:18px}
-.bottom-ribbon{gap:clamp(10px,.8vw,18px)}
-.footer-clock{display:flex;flex-direction:column;align-items:flex-end;justify-content:center;flex-shrink:0;border-left:1px solid rgba(255,255,255,.25);padding-left:clamp(10px,.8vw,18px);min-width:clamp(120px,10vw,190px)}
+.bottom-ribbon{gap:clamp(10px,.8vw,18px);background:linear-gradient(100deg,#102e63,#174c91 55%,#087e78);border-color:#2b68a5;box-shadow:0 3px 12px rgba(20,55,100,.18)}
+.bottom-ribbon-label{color:#ffdf70}
+.footer-clock{display:flex;flex-direction:column;align-items:flex-end;justify-content:center;flex-shrink:0;border-left:1px solid rgba(255,255,255,.3);padding-left:clamp(10px,.8vw,18px);min-width:clamp(120px,10vw,190px)}
 .footer-clock .clock-time{font-size:clamp(22px,1.5vw,34px);color:#fff;letter-spacing:-.02em}
-.footer-clock .clock-date{font-size:clamp(11px,.65vw,15px);color:#d6e2f5;margin-top:0;white-space:nowrap}
+.footer-clock .clock-date{font-size:clamp(11px,.65vw,15px);color:#e0edff;margin-top:0;white-space:nowrap}
 @media(min-width:2800px){.footer-clock .clock-time{font-size:38px}.footer-clock .clock-date{font-size:17px}}
+
 
 </style>
 
