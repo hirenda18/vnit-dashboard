@@ -418,6 +418,12 @@ html,body{height:100%;width:100%;background:var(--bg);color:var(--fg);font-famil
  .brand-sub{display:none}
  .brand-name{white-space:normal;text-align:center}
 }
+
+/* CONSTANT SCROLL SPEED FOR TICKERS, INDEPENDENT OF ITEM COUNT */
+.ticker-inner,.bottom-ribbon-text{animation-timing-function:linear!important}
+.ticker-inner{display:flex;width:max-content;gap:0}
+.ticker-copy{display:block;flex:0 0 auto;padding-right:4vw}
+.bottom-ribbon-text{animation-duration:var(--ribbon-duration,110s)}
 </style>
 
 <div class="shell">
@@ -578,6 +584,13 @@ function setBottomRibbonItems(items){
   const el=document.getElementById('bottomRibbonText');
   const content=escHtml(items.join('     ◆     ')||'No current schedule or notices');
   el.innerHTML=`<span class="bottom-ribbon-copy">${content}</span><span class="bottom-ribbon-copy" aria-hidden="true">${content}</span>`;
+  // Constant travel speed: longer content gets a proportionally longer cycle.
+  const copy=el.querySelector('.bottom-ribbon-copy');
+  requestAnimationFrame(()=>{
+    const pxPerSecond=58; // deliberately slow enough for TV readability
+    const distance=copy?copy.getBoundingClientRect().width:el.scrollWidth/2;
+    el.style.animationDuration=Math.max(12,distance/pxPerSecond)+'s';
+  });
 }
 
 /* ══ BOTTOM NEWS RIBBON ══ */
@@ -648,7 +661,15 @@ setInterval(updateClock,1000); updateClock();
 function renderNoticeTicker(){
   const messages=ANNOUNCEMENTS.map(a=>`${a.icon||'📢'} ${a.title}${a.body?' — '+a.body:''}`);
   const text=messages.length?messages.join('   ·   '):'No current notices';
-  document.getElementById('tickerInner').textContent=text+'   ·   '+text;
+  const el=document.getElementById('tickerInner');
+  const safe=escHtml(text);
+  el.innerHTML=`<span class="ticker-copy">${safe}</span><span class="ticker-copy" aria-hidden="true">${safe}</span>`;
+  requestAnimationFrame(()=>{
+    const copy=el.querySelector('.ticker-copy');
+    const pxPerSecond=48; // constant, slower speed for reading
+    const distance=copy?copy.getBoundingClientRect().width:el.scrollWidth/2;
+    el.style.animationDuration=Math.max(15,distance/pxPerSecond)+'s';
+  });
 }
 renderNoticeTicker();
 
