@@ -392,6 +392,32 @@ html,body{height:100%;width:100%;background:var(--bg);color:var(--fg);font-famil
 .projects-card .card-hd .card-count,.stats-card .card-hd .card-count{color:#283f68!important;background:#eef2f8!important;border-color:#d5dfeb!important}
 @media(max-width:1200px){.header{grid-template-columns:100px minmax(0,1fr) 35%}.brand-emblem{width:80px;height:60px}.brand-name{font-size:clamp(20px,2vw,28px)}}
 
+
+/* REFINED HEADER: CENTERED BRAND GROUP + CONTACT DETAILS */
+.header{display:block;position:relative;padding:0 18px}
+.header-brand{display:flex!important;align-items:center;justify-content:center;gap:14px;position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:max-content;max-width:48%;z-index:2}
+.brand-emblem{width:64px!important;height:64px!important;object-fit:contain;flex-shrink:0}
+.brand-text{text-align:left!important;justify-self:auto!important;grid-column:auto!important;grid-row:auto!important}
+.brand-name{font-size:clamp(22px,1.55vw,34px);white-space:nowrap}
+.brand-sub{font-size:clamp(10px,.7vw,14px);white-space:nowrap}
+.header-ticker{position:absolute;left:18px;top:0;bottom:0;width:25%;border-left:0;padding:0 8px;grid-column:auto;grid-row:auto}
+.header-contact{position:absolute;right:20px;top:50%;transform:translateY(-50%);width:23%;text-align:right;font-size:clamp(13px,.8vw,17px);line-height:1.5;color:#35445b;z-index:2}
+.header-contact strong{color:#243b64}
+.header-contact a{color:#243b64;text-decoration:none}
+@media(max-width:1500px){
+ .header-brand{max-width:45%}
+ .header-ticker{width:23%}
+ .header-contact{width:24%}
+ .brand-emblem{width:54px!important;height:54px!important}
+ .brand-name{font-size:clamp(19px,1.4vw,26px)}
+}
+@media(max-width:1100px){
+ .header-brand{max-width:52%;left:48%}
+ .header-ticker{width:20%}
+ .header-contact{width:25%;font-size:12px}
+ .brand-sub{display:none}
+ .brand-name{white-space:normal;text-align:center}
+}
 </style>
 
 <div class="shell">
@@ -402,6 +428,10 @@ html,body{height:100%;width:100%;background:var(--bg);color:var(--fg);font-famil
         <div class="brand-name">Department of Mechanical Engineering</div>
         <div class="brand-sub">VISVESVARAYA NATIONAL INSTITUTE OF TECHNOLOGY · NAGPUR</div>
       </div>
+    </div>
+    <div class="header-contact">
+      <div><strong>Office:</strong> 0712-280-1275</div>
+      <div><strong>Mail:</strong> <a href="mailto:office@mec.vnit.ac.in">office@mec.vnit.ac.in</a></div>
     </div>
     <div class="header-ticker">
       <span class="ticker-label">📢 Notice</span>
