@@ -375,12 +375,29 @@ html,body{height:100%;width:100%;background:var(--bg);color:var(--fg);font-famil
 .bottom-ribbon{background:#202b3c!important;border-color:#39475c!important}
 .bottom-ribbon-label{color:#d6b46f!important;border-right-color:rgba(214,180,111,.4)!important}
 
+
+/* HEADER ALIGNMENT AND BADGE CONTRAST UPDATE */
+.header{grid-template-columns:160px minmax(0,1fr) minmax(0,38%);align-items:center}
+.header-brand{display:contents}
+.brand-emblem{width:100px;height:70px;object-fit:contain;background:transparent;border-radius:0;box-shadow:none;grid-column:1;grid-row:1}
+.brand-text{grid-column:2;grid-row:1;text-align:center;justify-self:center}
+.brand-name{font-size:clamp(23px,1.8vw,38px);color:#243b64}
+.brand-sub{font-size:clamp(12px,.9vw,17px);margin-top:2px}
+.header-ticker{grid-column:3;grid-row:1;min-width:0}
+.card-count{font-weight:700;min-width:42px;text-align:center}
+.faculty-card .card-hd .card-count{color:#243b64!important;background:#eef2f8!important;border-color:#d7dfeb!important}
+.meeting-card .card-hd .card-count{color:#704b15!important;background:#fff5df!important;border-color:#ead7b1!important}
+.announce-card .card-hd .card-count{color:#7d2938!important;background:#fff0f2!important;border-color:#e8c5cb!important}
+.gallery-card .card-hd .card-count{color:#205442!important;background:#edf7f1!important;border-color:#cce2d5!important}
+.projects-card .card-hd .card-count,.stats-card .card-hd .card-count{color:#283f68!important;background:#eef2f8!important;border-color:#d5dfeb!important}
+@media(max-width:1200px){.header{grid-template-columns:100px minmax(0,1fr) 35%}.brand-emblem{width:80px;height:60px}.brand-name{font-size:clamp(20px,2vw,28px)}}
+
 </style>
 
 <div class="shell">
   <header class="header">
     <div class="header-brand">
-      <div class="brand-emblem">⚙️</div>
+      <img class="brand-emblem" src="https://vnit.ac.in/wp-content/uploads/2024/12/vnit-logo-1.jpg" alt="VNIT Nagpur Logo">
       <div class="brand-text">
         <div class="brand-name">Department of Mechanical Engineering</div>
         <div class="brand-sub">VISVESVARAYA NATIONAL INSTITUTE OF TECHNOLOGY · NAGPUR</div>
