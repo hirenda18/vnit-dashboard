@@ -77,8 +77,14 @@ html,body{height:100%;width:100%;background:var(--bg);color:var(--fg);font-famil
 .faculty-row-desig{font-size:15px;color:var(--fg2)}
 .faculty-row-details{min-width:0;flex:1}
 .faculty-row-area{font-size:13px;color:var(--fg3,var(--fg2));line-height:1.25;margin-top:3px;white-space:normal}
-.faculty-row{align-items:flex-start;padding:10px 16px;min-height:68px}
-.faculty-row-avatar{margin-top:2px}
+.faculty-row{align-items:flex-start;padding:12px 16px;min-height:92px;gap:14px;background:var(--surface);border-bottom:1px solid var(--border2)}
+.faculty-row-avatar{width:clamp(48px,3.2vw,72px);height:clamp(48px,3.2vw,72px);margin-top:2px;font-size:22px;border-width:2px}
+.faculty-row-details{display:flex;flex-direction:column;gap:2px}
+.faculty-row-name{font-size:clamp(17px,1.05vw,23px);font-weight:700}
+.faculty-row-desig{font-size:clamp(13px,.8vw,17px);font-weight:600;color:var(--accent)}
+.faculty-row-area{font-size:clamp(12px,.75vw,16px);line-height:1.35;color:var(--fg2);margin-top:6px;padding-top:6px;border-top:1px dashed var(--border);white-space:normal}
+.faculty-row-domain-tags{display:flex;flex-wrap:wrap;gap:5px;margin-top:4px}
+.faculty-domain-tag{display:inline-block;background:var(--surface3);border:1px solid var(--border);border-radius:999px;padding:2px 7px;font-size:clamp(11px,.68vw,14px);line-height:1.25;color:var(--fg2)}
 
 .faculty-pager{display:flex;align-items:center;justify-content:center;gap:5px;padding:7px;border-top:1px solid var(--border);flex-shrink:0}
 .pager-dot{width:5px;height:5px;border-radius:50%;background:var(--border);cursor:pointer;transition:background .2s,transform .2s}
@@ -747,9 +753,11 @@ function buildTrack(){
     const ini=getInitials(f.name), color=ACCENT_COLORS[i%ACCENT_COLORS.length];
     const driveId=getDriveImageId(f.image);
     const img=f.image?`<img src="${escHtml(normalizeImageUrl(f.image))}" data-drive-id="${escHtml(driveId)}" data-fallback-text="${escHtml(ini)}" alt="${escHtml(f.name)}" onerror="window.handleDashboardImageError(this)">`:escHtml(ini);
+    const domains=String(f.area||'').split(',').map(t=>t.trim()).filter(Boolean);
+    const domainHtml=domains.length?domains.map(t=>'<span class="faculty-domain-tag">'+escHtml(t)+'</span>').join(''):'';
     return `<div class="faculty-row" data-idx="${i}">
       <div class="faculty-row-avatar" style="background:${color};color:#fff">${img}</div>
-      <div class="faculty-row-details"><div class="faculty-row-name">${escHtml(f.name)}</div><div class="faculty-row-desig">${escHtml(f.desig)}</div><div class="faculty-row-area">${escHtml(f.area||'')}</div></div>
+      <div class="faculty-row-details"><div class="faculty-row-name">${escHtml(f.name)}</div><div class="faculty-row-desig">${escHtml(f.desig)}</div><div class="faculty-row-area"><strong>Research / Domain</strong><div class="faculty-row-domain-tags">${domainHtml}</div></div></div>
     </div>`;
   }).join('');
   if(facultyScrollTimer)clearInterval(facultyScrollTimer);
