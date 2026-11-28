@@ -118,6 +118,11 @@ html,body{height:100%;width:100%;background:var(--bg);color:var(--fg);font-famil
 .gallery-body{padding:12px 14px 10px;gap:10px}
 .gallery-stage{position:relative;flex:1;min-height:0;overflow:hidden;border-radius:12px;background:linear-gradient(135deg,#e7edf7,#dce6f4);display:flex;align-items:center;justify-content:center}
 .gallery-stage img{width:100%;height:100%;object-fit:contain;display:block}
+.gallery-arrow{position:absolute;top:50%;transform:translateY(-50%);z-index:5;width:clamp(42px,3.4vw,76px);height:clamp(42px,3.4vw,76px);border-radius:50%;border:2px solid rgba(255,255,255,.8);background:rgba(24,43,68,.72);color:#fff;font-size:clamp(32px,2.4vw,54px);font-weight:700;line-height:1;display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 3px 12px rgba(0,0,0,.25);transition:background .2s,transform .2s}
+.gallery-arrow:hover{background:rgba(24,43,68,.95);transform:translateY(-50%) scale(1.06)}
+.gallery-arrow-prev{left:clamp(10px,1vw,22px)}
+.gallery-arrow-next{right:clamp(10px,1vw,22px)}
+
 .gallery-stage img,.gallery-placeholder{animation:gallery-fade-in .7s ease both}
 @keyframes gallery-fade-in{from{opacity:0}to{opacity:1}}
 .gallery-progress-track{position:absolute;left:0;right:0;bottom:0;height:4px;background:rgba(255,255,255,.25);z-index:3;overflow:hidden}
@@ -821,7 +826,9 @@ renderMeetings(); setInterval(renderMeetings,60000);
     const visual=s.image
       ? `<img src="${escHtml(normalizeImageUrl(s.image))}" data-drive-id="${escHtml(driveId)}" data-fallback-type="gallery" data-fallback-icon="${escHtml(s.icon)}" alt="${escHtml(s.title)}" onerror="window.handleDashboardImageError(this)">`
       : `<div class="gallery-placeholder"><div class="gallery-placeholder-icon">${escHtml(s.icon)}</div><div class="gallery-placeholder-label">Photograph to be added</div></div>`;
-    stage.innerHTML=visual+`<div class="gallery-overlay"><div class="gallery-category">${escHtml(s.category)}</div><div class="gallery-overlay-title">${escHtml(s.title)}</div><div class="gallery-overlay-meta">${escHtml(s.meta)}</div></div><div class="gallery-progress-track"><div class="gallery-progress-bar" style="animation-duration:${duration}ms"></div></div>`;
+    stage.innerHTML=visual+`<div class="gallery-overlay"><div class="gallery-category">${escHtml(s.category)}</div><div class="gallery-overlay-title">${escHtml(s.title)}</div><div class="gallery-overlay-meta">${escHtml(s.meta)}</div></div>
+      ${slides.length>1?`<button class="gallery-arrow gallery-arrow-prev" aria-label="Previous photo" onclick="window.showGallerySlide(${current-1})">‹</button><button class="gallery-arrow gallery-arrow-next" aria-label="Next photo" onclick="window.showGallerySlide(${current+1})">›</button>`:''}
+      <div class="gallery-progress-track"><div class="gallery-progress-bar" style="animation-duration:${duration}ms"></div></div>`;
     caption.textContent=s.caption;
     controls.innerHTML=slides.map((_,i)=>`<button class="gallery-dot${i===current?' active':''}" aria-label="Show gallery item ${i+1}" onclick="window.showGallerySlide(${i})"></button>`).join('');
     document.getElementById('galleryCount').textContent=`${slides.length} items`;
