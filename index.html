@@ -392,10 +392,12 @@ html,body{height:100%;width:100%;background:var(--bg);color:var(--fg);font-famil
 .technical-card .card-hd .card-title,.technical-card .card-hd .card-count{color:#fff}
 .technical-body{flex:1;min-height:0;overflow:hidden;display:flex;align-items:center;padding:clamp(8px,1vw,16px)}
 .technical-profile{display:flex;align-items:center;gap:clamp(10px,1vw,18px);width:100%;animation:techFade .5s ease}
-.technical-avatar{width:clamp(44px,3.2vw,72px);height:clamp(44px,3.2vw,72px);border-radius:50%;background:#d9eee1;color:#26764c;border:2px solid #65ae82;display:flex;align-items:center;justify-content:center;font-size:clamp(18px,1.2vw,28px);font-weight:800;flex-shrink:0}
-.technical-info{min-width:0}
+.technical-avatar{width:clamp(64px,4.2vw,92px);height:clamp(64px,4.2vw,92px);border-radius:50%;background:#d9eee1;color:#26764c;border:2px solid #65ae82;overflow:hidden;display:flex;align-items:center;justify-content:center;font-size:clamp(18px,1.2vw,28px);font-weight:800;flex-shrink:0}
+.technical-avatar img{width:100%;height:100%;object-fit:cover;border-radius:50%}
+.technical-info{min-width:0;flex:1}
 .technical-name{font-family:'Space Grotesk',sans-serif;font-size:clamp(17px,1.15vw,24px);font-weight:700;color:#183c2b;line-height:1.25}
 .technical-designation{font-size:clamp(13px,.85vw,18px);font-weight:600;color:#26764c;margin-top:3px}
+.technical-area{font-size:clamp(12px,.78vw,16px);color:#4c6b58;margin-top:5px;line-height:1.35}
 .technical-empty{width:100%;text-align:center;color:#4c6b58;font-size:clamp(13px,.85vw,18px);padding:12px}
 @keyframes techFade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
 .bottom-ribbon{background:#202b3c!important;border-color:#39475c!important}
@@ -787,8 +789,11 @@ function renderTechnicalStaff(){
  if(technicalStaffTimer)clearInterval(technicalStaffTimer);
  function show(){
   const s=TECHNICAL_STAFF[technicalStaffIndex%TECHNICAL_STAFF.length];
-  const initials=s.initials||String(s.name||'').split(/\\s+/).map(n=>n[0]||'').slice(0,2).join('').toUpperCase();
-  body.innerHTML=`<div class="technical-profile"><div class="technical-avatar">${escHtml(initials)}</div><div class="technical-info"><div class="technical-name">${escHtml(s.name||'')}</div><div class="technical-designation">${escHtml(s.desig||'Technical Staff')}</div></div></div>`;
+  const ini=s.initials||getInitials(s.name||'');
+  const color=ACCENT_COLORS[technicalStaffIndex%ACCENT_COLORS.length];
+  const driveId=getDriveImageId(s.image);
+  const img=s.image?'<img src="'+escHtml(normalizeImageUrl(s.image))+'" data-drive-id="'+escHtml(driveId)+'" data-fallback-text="'+escHtml(ini)+'" alt="'+escHtml(s.name||'')+'" onerror="window.handleDashboardImageError(this)">':escHtml(ini);
+  body.innerHTML='<div class="technical-profile"><div class="technical-avatar" style="border-color:'+color+';color:#fff;background:'+color+'">'+img+'</div><div class="technical-info"><div class="technical-name">'+escHtml(s.name||'')+'</div><div class="technical-designation">'+escHtml(s.desig||'Technical Staff')+'</div>'+(s.area?'<div class="technical-area">'+escHtml(s.area)+'</div>':'')+'</div></div>';
  }
  show();
  if(TECHNICAL_STAFF.length>1)technicalStaffTimer=setInterval(()=>{technicalStaffIndex=(technicalStaffIndex+1)%TECHNICAL_STAFF.length;show();},5000);
