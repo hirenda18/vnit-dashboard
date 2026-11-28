@@ -23,7 +23,7 @@ html,body{height:100%;width:100%;background:var(--bg);color:var(--fg);font-famil
 .shell{display:grid;height:100vh;grid-template-rows:80px 1fr;gap:var(--gap);padding:12px 14px 14px}
 
 /* HEADER */
-.header{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:20px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:0 20px 0 16px;position:relative;overflow:hidden}
+.header{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1.7fr) auto;align-items:center;gap:clamp(8px,.7vw,16px);background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:0 20px 0 16px;position:relative;overflow:hidden}
 .header::before{content:'';position:absolute;left:0;top:0;bottom:0;width:4px;background:linear-gradient(180deg,var(--accent),var(--accent2))}
 .header-brand{display:flex;align-items:center;gap:12px}
 .brand-emblem{width:44px;height:44px;background:linear-gradient(135deg,var(--accent),#0e3fa6);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:33px;flex-shrink:0;box-shadow:0 2px 12px rgba(26,86,219,.4)}
@@ -439,10 +439,30 @@ html,body{height:100%;width:100%;background:var(--bg);color:var(--fg);font-famil
 .ticker-inner{display:flex;width:max-content;gap:0}
 .ticker-copy{display:block;flex:0 0 auto;padding-right:4vw}
 .bottom-ribbon-text{animation-duration:var(--ribbon-duration,110s)}
+
+/* Compact department snapshot in the header, left of department identity */
+.header-snapshot{display:flex;align-items:center;justify-content:flex-start;gap:clamp(5px,.55vw,12px);min-width:0;white-space:nowrap;padding-right:clamp(8px,.8vw,16px);border-right:1px solid var(--border)}
+.header-stat{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;min-width:0;padding:2px clamp(3px,.35vw,7px);line-height:1.05}
+.header-stat-icon{font-size:clamp(14px,.95vw,22px);line-height:1}
+.header-stat-value{font-family:'Space Grotesk',sans-serif;font-weight:800;font-size:clamp(15px,1.05vw,24px);line-height:1.1;color:#4d8a24}
+.header-stat.research .header-stat-value{color:#a66a08}
+.header-stat-label{font-size:clamp(9px,.52vw,12px);font-weight:600;color:var(--fg2);letter-spacing:.01em}
+.header-brand{min-width:0;gap:clamp(7px,.6vw,12px)}
+.brand-name{font-size:clamp(17px,1.15vw,23px)}
+.brand-sub{font-size:clamp(10px,.72vw,16px)}
+@media(max-width:1100px){.header{grid-template-columns:1fr auto}.header-snapshot{gap:3px;padding-right:6px}.header-stat-label{font-size:9px}.header-stat-value{font-size:14px}.header-brand{max-width:none;left:auto}.brand-sub{display:none}.brand-name{white-space:normal;text-align:left}.header-ticker{display:none}}
+
 </style>
 
 <div class="shell">
   <header class="header">
+    <div class="header-snapshot" id="statsGrid">
+      <div class="header-stat research"><span class="header-stat-icon">🏆</span><span class="header-stat-value">—</span><span class="header-stat-label">Patents</span></div>
+      <div class="header-stat research"><span class="header-stat-icon">📚</span><span class="header-stat-value">—</span><span class="header-stat-label">Publications</span></div>
+      <div class="header-stat student"><span class="header-stat-icon">🎓</span><span class="header-stat-value">—</span><span class="header-stat-label">B.Tech</span></div>
+      <div class="header-stat student"><span class="header-stat-icon">🧑‍🔬</span><span class="header-stat-value">—</span><span class="header-stat-label">M.Tech</span></div>
+      <div class="header-stat student"><span class="header-stat-icon">🔬</span><span class="header-stat-value">—</span><span class="header-stat-label">PhD</span></div>
+    </div>
     <div class="header-brand">
       <img class="brand-emblem" src="https://vnit.ac.in/wp-content/uploads/2024/12/vnit-logo-1.jpg" alt="VNIT Nagpur Logo">
       <div class="brand-text">
@@ -514,16 +534,7 @@ html,body{height:100%;width:100%;background:var(--bg);color:var(--fg);font-famil
         <div class="card-hd"><div class="card-title"><span class="dot dot-blue"></span>Active R&amp;D Projects</div><div class="card-count" id="projectCount">—</div></div>
         <div class="project-scroll-window" id="projectWindow"><div class="project-track" id="projectTrack"><div class="project-empty">Project information will appear here</div></div></div>
       </div>
-      <div class="card stats-card">
-        <div class="card-hd"><div class="card-title"><span class="dot dot-green"></span>Department Snapshot</div><div class="card-count">Key figures</div></div>
-        <div class="stats-grid" id="statsGrid">
-          <div class="stat-tile research"><div class="stat-icon">🏆</div><div class="stat-value">—</div><div class="stat-label">Patents</div></div>
-          <div class="stat-tile research"><div class="stat-icon">📚</div><div class="stat-value">—</div><div class="stat-label">Publications</div></div>
-          <div class="stat-tile student"><div class="stat-icon">🎓</div><div class="stat-value">—</div><div class="stat-label">B.Tech Students</div></div>
-          <div class="stat-tile student"><div class="stat-icon">🧑‍🔬</div><div class="stat-value">—</div><div class="stat-label">M.Tech Students</div></div>
-          <div class="stat-tile student phd"><div class="stat-icon">🔬</div><div class="stat-value">—</div><div class="stat-label">PhD Students</div></div>
-        </div>
-      </div>
+      
     </div>
   </div>
   <div class="bottom-ribbon" role="region" aria-label="Department schedule and notices">
@@ -886,11 +897,12 @@ function renderStatistics(rows){
   {keys:['publications','no. of publications','number of publications'],label:'Publications',icon:'📚',group:'research'},
   {keys:['b.tech students','btech students','b.tech'],label:'B.Tech Students',icon:'🎓',group:'student'},
   {keys:['m.tech students','mtech students','m.tech'],label:'M.Tech Students',icon:'🧑‍🔬',group:'student'},
-  {keys:['phd students','ph.d. students','phd'],label:'PhD Students',icon:'🔬',group:'student',wide:true}
+  {keys:['phd students','ph.d. students','phd'],label:'PhD Students',icon:'🔬',group:'student'}
  ];
  document.getElementById('statsGrid').innerHTML=specs.map(s=>{
   const v=s.keys.map(k=>values[k]).find(v=>v!==undefined)??'—';
-  return `<div class="stat-tile ${s.group}${s.wide?' phd':''}"><div class="stat-icon">${s.icon}</div><div class="stat-value">${escHtml(v)}</div><div class="stat-label">${s.label}</div></div>`;
+  const shortLabel=({'B.Tech Students':'B.Tech','M.Tech Students':'M.Tech','PhD Students':'PhD'}[s.label]||s.label);
+  return `<div class="header-stat ${s.group}"><span class="header-stat-icon">${s.icon}</span><span class="header-stat-value">${escHtml(v)}</span><span class="header-stat-label">${shortLabel}</span></div>`;
  }).join('');
 }
 async function refreshDashboardContent(){
