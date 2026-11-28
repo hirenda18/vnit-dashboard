@@ -257,8 +257,13 @@ html,body{height:100%;width:100%;background:var(--bg);color:var(--fg);font-famil
 .right-stack{grid-column:3;grid-row:1}
 /* Single-entry Faculty Directory: no duplicate spotlight profile */
 .faculty-spotlight,.faculty-progress,.faculty-pager{display:none!important}
-.faculty-scroll-wrap{overflow:hidden}
+.faculty-scroll-wrap{overflow-y:auto;overflow-x:hidden;scrollbar-width:none}
+.faculty-scroll-wrap::-webkit-scrollbar{display:none}
 .faculty-scroll-track{transition:transform .7s ease!important}
+.faculty-card .card-hd,.technical-card .card-hd{position:relative;z-index:2;flex-shrink:0}
+.technical-scroll-wrap{overflow-y:auto;overflow-x:hidden;scrollbar-width:none}
+.technical-scroll-wrap::-webkit-scrollbar{display:none}
+.faculty-card .card-title,.technical-card .card-title{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .faculty-row{padding:12px 16px;min-height:52px;cursor:default}
 .faculty-row-desig{display:block!important}
 .faculty-row-name{font-weight:600;white-space:normal;line-height:1.25}
