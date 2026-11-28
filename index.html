@@ -284,10 +284,16 @@ html,body{height:100%;width:100%;background:var(--bg);color:var(--fg);font-famil
 .project-meta{font-size:clamp(13px,.78vw,18px);color:var(--fg2);margin-top:4px;line-height:1.3}
 .project-amount{color:var(--accent2);font-weight:700}
 .project-empty{height:100%;display:flex;align-items:center;justify-content:center;color:var(--fg3);font-size:17px;text-align:center;padding:12px}
-.stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:12px;flex:1;min-height:0}
-.stat-tile{border:1px solid var(--border);border-radius:10px;background:var(--surface2);padding:10px;display:flex;flex-direction:column;justify-content:center;min-height:0}
-.stat-value{font-family:'Space Grotesk',sans-serif;font-size:clamp(25px,1.8vw,42px);font-weight:700;line-height:1.1;color:var(--accent);font-variant-numeric:tabular-nums}
-.stat-label{font-size:clamp(12px,.72vw,17px);font-weight:700;color:var(--fg2);text-transform:uppercase;letter-spacing:.04em;margin-top:5px}
+.stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:12px;flex:1;min-height:0}
+.stat-tile{border:1px solid var(--border);border-radius:12px;background:var(--surface2);padding:clamp(10px,.75vw,18px);display:grid;grid-template-columns:auto 1fr;grid-template-rows:auto auto;align-items:center;column-gap:10px;min-height:0;position:relative;overflow:hidden}
+.stat-tile.research{background:linear-gradient(135deg,#fffaf0,#fff);border-color:#e6c980}
+.stat-tile.student{background:linear-gradient(135deg,#f2fbf5,#fff);border-color:#b9dec6}
+.stat-icon{grid-row:1/3;font-size:clamp(24px,1.65vw,40px);line-height:1;opacity:.95}
+.stat-value{font-family:'Space Grotesk',sans-serif;font-size:clamp(30px,2.2vw,52px);font-weight:700;line-height:1.05;color:#a66a08;font-variant-numeric:tabular-nums;letter-spacing:-.03em}
+.stat-tile.student .stat-value{color:#087a58}
+.stat-label{font-size:clamp(12px,.8vw,19px);font-weight:700;color:var(--fg2);text-transform:uppercase;letter-spacing:.04em;margin-top:3px;line-height:1.2}
+.stat-tile.phd{grid-column:1/3}
+@media(min-width:2800px){.stats-grid{gap:14px;padding:18px}.stat-tile{padding:20px}.stat-icon{font-size:48px}.stat-value{font-size:56px}.stat-label{font-size:24px}}
 .right-stack .card-hd{padding:9px 12px}
 .bottom-ribbon{min-height:64px}
 .bottom-ribbon-label{font-size:clamp(18px,1.2vw,27px);letter-spacing:.07em}
@@ -509,11 +515,11 @@ html,body{height:100%;width:100%;background:var(--bg);color:var(--fg);font-famil
       <div class="card stats-card">
         <div class="card-hd"><div class="card-title"><span class="dot dot-green"></span>Department Snapshot</div><div class="card-count">Key figures</div></div>
         <div class="stats-grid" id="statsGrid">
-          <div class="stat-tile"><div class="stat-value">—</div><div class="stat-label">Patents</div></div>
-          <div class="stat-tile"><div class="stat-value">—</div><div class="stat-label">Publications</div></div>
-          <div class="stat-tile"><div class="stat-value">—</div><div class="stat-label">B.Tech Students</div></div>
-          <div class="stat-tile"><div class="stat-value">—</div><div class="stat-label">M.Tech Students</div></div>
-          <div class="stat-tile" style="grid-column:1/3"><div class="stat-value">—</div><div class="stat-label">PhD Students</div></div>
+          <div class="stat-tile research"><div class="stat-icon">🏆</div><div class="stat-value">—</div><div class="stat-label">Patents</div></div>
+          <div class="stat-tile research"><div class="stat-icon">📚</div><div class="stat-value">—</div><div class="stat-label">Publications</div></div>
+          <div class="stat-tile student"><div class="stat-icon">🎓</div><div class="stat-value">—</div><div class="stat-label">B.Tech Students</div></div>
+          <div class="stat-tile student"><div class="stat-icon">🧑‍🔬</div><div class="stat-value">—</div><div class="stat-label">M.Tech Students</div></div>
+          <div class="stat-tile student phd"><div class="stat-icon">🔬</div><div class="stat-value">—</div><div class="stat-label">PhD Students</div></div>
         </div>
       </div>
     </div>
@@ -872,8 +878,17 @@ function renderProjects(rows){
 }
 function renderStatistics(rows){
  const values={};rows.forEach(r=>{const k=String(r.Parameter||r.Metric||'').trim().toLowerCase();if(k)values[k]=r.Value??r.Count??'—';});
- const specs=[{keys:['patents','no. of patents','number of patents'],label:'Patents'},{keys:['publications','no. of publications','number of publications'],label:'Publications'},{keys:['b.tech students','btech students','b.tech'],label:'B.Tech Students'},{keys:['m.tech students','mtech students','m.tech'],label:'M.Tech Students'},{keys:['phd students','ph.d. students','phd'],label:'PhD Students'}];
- document.getElementById('statsGrid').innerHTML=specs.map(s=>{const v=s.keys.map(k=>values[k]).find(v=>v!==undefined)??'—';return `<div class="stat-tile"><div class="stat-value">${escHtml(v)}</div><div class="stat-label">${s.label}</div></div>`;}).join('');
+ const specs=[
+  {keys:['patents','no. of patents','number of patents'],label:'Patents',icon:'🏆',group:'research'},
+  {keys:['publications','no. of publications','number of publications'],label:'Publications',icon:'📚',group:'research'},
+  {keys:['b.tech students','btech students','b.tech'],label:'B.Tech Students',icon:'🎓',group:'student'},
+  {keys:['m.tech students','mtech students','m.tech'],label:'M.Tech Students',icon:'🧑‍🔬',group:'student'},
+  {keys:['phd students','ph.d. students','phd'],label:'PhD Students',icon:'🔬',group:'student',wide:true}
+ ];
+ document.getElementById('statsGrid').innerHTML=specs.map(s=>{
+  const v=s.keys.map(k=>values[k]).find(v=>v!==undefined)??'—';
+  return `<div class="stat-tile ${s.group}${s.wide?' phd':''}"><div class="stat-icon">${s.icon}</div><div class="stat-value">${escHtml(v)}</div><div class="stat-label">${s.label}</div></div>`;
+ }).join('');
 }
 async function refreshDashboardContent(){
   const results=await Promise.allSettled(Object.entries(SHEET_CSV_URLS).filter(([,url])=>!!url).map(async ([key,url])=>[key,await fetchSheet(url)]));
