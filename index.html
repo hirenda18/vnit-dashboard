@@ -117,7 +117,7 @@ html,body{height:100%;width:100%;background:var(--bg);color:var(--fg);font-famil
 .gallery-card{grid-column:2/4;grid-row:2}
 .gallery-body{padding:12px 14px 10px;gap:10px}
 .gallery-stage{position:relative;flex:1;min-height:0;overflow:hidden;border-radius:12px;background:linear-gradient(135deg,#e7edf7,#dce6f4);display:flex;align-items:center;justify-content:center}
-.gallery-stage img{width:100%;height:100%;object-fit:cover;display:block}
+.gallery-stage img{width:100%;height:100%;object-fit:contain;display:block}
 .gallery-placeholder{width:100%;height:100%;min-height:150px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;color:#53627a;background:radial-gradient(circle at 50% 35%,#fff 0,#e9eef7 58%,#dce5f1 100%)}
 .gallery-placeholder-icon{font-size:clamp(57px,4.800000000000001vw,114px);line-height:1}
 .gallery-placeholder-label{font-size:clamp(18px,1.125vw,27px);font-weight:600;letter-spacing:.04em;text-transform:uppercase}
@@ -125,8 +125,9 @@ html,body{height:100%;width:100%;background:var(--bg);color:var(--fg);font-famil
 .gallery-category{font-size:clamp(15px,0.8999999999999999vw,21px);font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#d9e6ff;margin-bottom:5px}
 .gallery-overlay-title{font-family:'Space Grotesk',sans-serif;font-size:clamp(25.5px,1.7249999999999999vw,42px);font-weight:700;line-height:1.2}
 .gallery-overlay-meta{font-size:clamp(16.5px,1.02vw,24px);margin-top:5px;color:rgba(255,255,255,.84)}
-.gallery-footer{display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:24px}
-.gallery-caption{font-size:16.5px;color:var(--fg2);min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.gallery-footer{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;min-height:24px;flex-shrink:0}
+.gallery-caption{font-size:16.5px;color:var(--fg2);min-width:0;flex:1;white-space:normal;overflow:visible;text-overflow:clip;overflow-wrap:anywhere;line-height:1.4}
+.gallery-controls{display:flex;gap:6px;flex-shrink:0;padding-top:3px}
 .gallery-controls{display:flex;gap:6px;flex-shrink:0}
 .gallery-dot{width:7px;height:7px;border-radius:50%;background:var(--border);border:0;padding:0;cursor:pointer}
 .gallery-dot.active{background:var(--accent);transform:scale(1.25)}
