@@ -118,6 +118,12 @@ html,body{height:100%;width:100%;background:var(--bg);color:var(--fg);font-famil
 .gallery-body{padding:12px 14px 10px;gap:10px}
 .gallery-stage{position:relative;flex:1;min-height:0;overflow:hidden;border-radius:12px;background:linear-gradient(135deg,#e7edf7,#dce6f4);display:flex;align-items:center;justify-content:center}
 .gallery-stage img{width:100%;height:100%;object-fit:contain;display:block}
+.gallery-stage img,.gallery-placeholder{animation:gallery-fade-in .7s ease both}
+@keyframes gallery-fade-in{from{opacity:0}to{opacity:1}}
+.gallery-progress-track{position:absolute;left:0;right:0;bottom:0;height:4px;background:rgba(255,255,255,.25);z-index:3;overflow:hidden}
+.gallery-progress-bar{height:100%;width:0;background:#ffd36a;transform-origin:left;animation:gallery-progress linear forwards}
+@keyframes gallery-progress{from{width:0}to{width:100%}}
+
 .gallery-placeholder{width:100%;height:100%;min-height:150px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;color:#53627a;background:radial-gradient(circle at 50% 35%,#fff 0,#e9eef7 58%,#dce5f1 100%)}
 .gallery-placeholder-icon{font-size:clamp(57px,4.800000000000001vw,114px);line-height:1}
 .gallery-placeholder-label{font-size:clamp(18px,1.125vw,27px);font-weight:600;letter-spacing:.04em;text-transform:uppercase}
@@ -764,19 +770,26 @@ renderMeetings(); setInterval(renderMeetings,60000);
   const stage=document.getElementById('galleryStage');
   const caption=document.getElementById('galleryCaption');
   const controls=document.getElementById('galleryControls');
-  let current=0;
-  function show(index){
+  let current=0, galleryTimer=null;
+  const BASE_DURATION=8000, MAX_DURATION=14000;
+  function getSlideDuration(s){
+    const captionLength=String(s.caption||'').trim().length;
+    return Math.min(MAX_DURATION,BASE_DURATION+Math.max(0,captionLength-100)*35);
+  }
+  function show(index,autoAdvance=true){
+    if(galleryTimer){clearTimeout(galleryTimer);galleryTimer=null;}
     if(!slides.length){stage.innerHTML='<div class="gallery-placeholder"><div class="gallery-placeholder-icon">📷</div><div class="gallery-placeholder-label">No gallery items</div></div>';caption.textContent='';controls.innerHTML='';document.getElementById('galleryCount').textContent='0 items';return;}
     current=(index+slides.length)%slides.length;
-    const s=slides[current];
+    const s=slides[current], duration=getSlideDuration(s);
     const driveId=getDriveImageId(s.image);
     const visual=s.image
       ? `<img src="${escHtml(normalizeImageUrl(s.image))}" data-drive-id="${escHtml(driveId)}" data-fallback-type="gallery" data-fallback-icon="${escHtml(s.icon)}" alt="${escHtml(s.title)}" onerror="window.handleDashboardImageError(this)">`
       : `<div class="gallery-placeholder"><div class="gallery-placeholder-icon">${escHtml(s.icon)}</div><div class="gallery-placeholder-label">Photograph to be added</div></div>`;
-    stage.innerHTML=visual+`<div class="gallery-overlay"><div class="gallery-category">${escHtml(s.category)}</div><div class="gallery-overlay-title">${escHtml(s.title)}</div><div class="gallery-overlay-meta">${escHtml(s.meta)}</div></div>`;
+    stage.innerHTML=visual+`<div class="gallery-overlay"><div class="gallery-category">${escHtml(s.category)}</div><div class="gallery-overlay-title">${escHtml(s.title)}</div><div class="gallery-overlay-meta">${escHtml(s.meta)}</div></div><div class="gallery-progress-track"><div class="gallery-progress-bar" style="animation-duration:${duration}ms"></div></div>`;
     caption.textContent=s.caption;
     controls.innerHTML=slides.map((_,i)=>`<button class="gallery-dot${i===current?' active':''}" aria-label="Show gallery item ${i+1}" onclick="window.showGallerySlide(${i})"></button>`).join('');
     document.getElementById('galleryCount').textContent=`${slides.length} items`;
+    if(autoAdvance&&slides.length>1)galleryTimer=setTimeout(()=>show(current+1,true),duration);
   }
   window.showGallerySlide=show;
   window.updateGalleryFromSheet=function(rows){
@@ -784,7 +797,6 @@ renderMeetings(); setInterval(renderMeetings,60000);
     current=0;show(0);
   };
   show(0);
-  setInterval(()=>show(current+1),8000);
 })();
 
 /* ══ GOOGLE SHEETS CONTENT SYNC ══
