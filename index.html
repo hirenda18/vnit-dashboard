@@ -239,13 +239,11 @@ html,body{height:100%;width:100%;background:var(--bg);color:var(--fg);font-famil
 .faculty-card{grid-column:1;grid-row:1}
 .gallery-card{grid-column:2;grid-row:1}
 .right-stack{grid-column:3;grid-row:1}
-/* Keep the rotating faculty profile above the complete faculty list */
-.faculty-spotlight{display:flex!important}
-.faculty-progress{display:block!important}
-.faculty-pager{display:flex!important}
+/* Single-entry Faculty Directory: no duplicate spotlight profile */
+.faculty-spotlight,.faculty-progress,.faculty-pager{display:none!important}
 .faculty-scroll-wrap{overflow:hidden}
-.faculty-scroll-track{transition:transform .5s cubic-bezier(.4,0,.2,1)!important}
-.faculty-row{padding:12px 16px;min-height:52px}
+.faculty-scroll-track{transition:transform .7s ease!important}
+.faculty-row{padding:12px 16px;min-height:52px;cursor:default}
 .faculty-row-desig{display:block!important}
 .faculty-row-name{font-weight:600;white-space:normal;line-height:1.25}
 .gallery-body{padding:14px;gap:12px}
@@ -502,12 +500,9 @@ html,body{height:100%;width:100%;background:var(--bg);color:var(--fg);font-famil
         <div class="card-count" id="facultyCount">—</div>
       </div>
       <div class="card-body">
-        <div class="faculty-spotlight" id="facultySpotlight"></div>
-        <div class="faculty-progress"><div class="faculty-progress-bar" id="facultyBar"></div></div>
         <div class="faculty-scroll-wrap" id="facultyScrollWrap">
           <div class="faculty-scroll-track" id="facultyTrack"></div>
         </div>
-        <div class="faculty-pager" id="facultyPager"></div>
       </div>
     </div>
 
@@ -730,58 +725,32 @@ renderNoticeTicker();
 const ACCENT_COLORS=['#1a56db','#7c3aed','#0891b2','#059669','#d97706','#dc2626','#9333ea','#0284c7','#15803d','#b45309'];
 function getInitials(n){ return n.replace(/Prof\.|Dr\./g,'').trim().split(' ').filter(Boolean).map(w=>w[0]).slice(0,2).join(''); }
 
-let currentFaculty=0, facultyTimer;
-const SPOTLIGHT_MS=5000;
-
+let facultyScrollTimer=null, facultyScrollOffset=0;
 function buildTrack(){
+  const wrap=document.getElementById('facultyScrollWrap');
+  const track=document.getElementById('facultyTrack');
   document.getElementById('facultyCount').textContent=`${FACULTY.length} Faculty`;
-  document.getElementById('facultyTrack').innerHTML=FACULTY.map((f,i)=>{
+  track.innerHTML=FACULTY.map((f,i)=>{
     const ini=getInitials(f.name), color=ACCENT_COLORS[i%ACCENT_COLORS.length];
-    const driveId=getDriveImageId(f.image); const img=f.image?`<img src="${escHtml(normalizeImageUrl(f.image))}" data-drive-id="${escHtml(driveId)}" data-fallback-text="${escHtml(ini)}" alt="${escHtml(f.name)}" onerror="window.handleDashboardImageError(this)">`:escHtml(ini);
-    return `<div class="faculty-row${i===0?' active':''}" data-idx="${i}" onclick="selectFaculty(${i})">
+    const driveId=getDriveImageId(f.image);
+    const img=f.image?`<img src="${escHtml(normalizeImageUrl(f.image))}" data-drive-id="${escHtml(driveId)}" data-fallback-text="${escHtml(ini)}" alt="${escHtml(f.name)}" onerror="window.handleDashboardImageError(this)">`:escHtml(ini);
+    return `<div class="faculty-row" data-idx="${i}">
       <div class="faculty-row-avatar" style="background:${color};color:#fff">${img}</div>
       <div><div class="faculty-row-name">${escHtml(f.name)}</div><div class="faculty-row-desig">${escHtml(f.desig)}</div></div>
     </div>`;
   }).join('');
+  if(facultyScrollTimer)clearInterval(facultyScrollTimer);
+  facultyScrollOffset=0;track.style.transform='translateY(0)';
+  if(FACULTY.length>1)facultyScrollTimer=setInterval(()=>{
+    const rows=track.children;
+    if(!rows.length)return;
+    const max=Math.max(0,track.scrollHeight-wrap.clientHeight);
+    const next=facultyScrollOffset+rows[0].offsetHeight;
+    facultyScrollOffset=next>max?0:next;
+    track.style.transform=`translateY(-${facultyScrollOffset}px)`;
+  },5000);
 }
-
-function buildSpotlight(f,i){
-  const ini=getInitials(f.name), color=ACCENT_COLORS[i%ACCENT_COLORS.length];
-  const driveId=getDriveImageId(f.image); const img=f.image?`<img src="${escHtml(normalizeImageUrl(f.image))}" data-drive-id="${escHtml(driveId)}" data-fallback-text="${escHtml(ini)}" alt="${escHtml(f.name)}" onerror="window.handleDashboardImageError(this)">`:escHtml(ini);
-  const tags=f.area.split(',').slice(0,3).map(t=>`<span class="faculty-spotlight-tag">${escHtml(t.trim())}</span>`).join('');
-  return `<div class="faculty-spotlight-avatar" style="border-color:${color};color:#fff">${img}</div>
-    <div class="faculty-spotlight-info">
-      <div class="faculty-spotlight-name">${escHtml(f.name)}</div>
-      <div class="faculty-spotlight-desig">${escHtml(f.desig)}</div>
-      <div class="faculty-spotlight-area">${escHtml(f.area)}</div>
-      <div class="faculty-spotlight-tags">${tags}</div>
-    </div>`;
-}
-
-function applyFaculty(){
-  const f=FACULTY[currentFaculty];
-  document.getElementById('facultySpotlight').innerHTML=buildSpotlight(f,currentFaculty);
-  document.querySelectorAll('.faculty-row').forEach((r,i)=>r.classList.toggle('active',i===currentFaculty));
-  // scroll list so active row is visible
-  const wrap=document.getElementById('facultyScrollWrap');
-  const rows=document.querySelectorAll('.faculty-row');
-  if(rows[currentFaculty]){
-    const rh=rows[0].offsetHeight, wh=wrap.offsetHeight;
-    const target=rh*currentFaculty-wh/2+rh/2;
-    document.getElementById('facultyTrack').style.transform=`translateY(${-Math.max(0,target)}px)`;
-  }
-  // pager
-  document.getElementById('facultyPager').innerHTML=FACULTY.map((_,i)=>
-    `<div class="pager-dot${i===currentFaculty?' active':''}" onclick="selectFaculty(${i})"></div>`).join('');
-  // progress bar
-  const bar=document.getElementById('facultyBar');
-  bar.style.transition='none'; bar.style.width='0%';
-  requestAnimationFrame(()=>{ bar.style.transition=`width ${SPOTLIGHT_MS}ms linear`; bar.style.width='100%'; });
-}
-
-function selectFaculty(idx){ clearInterval(facultyTimer); currentFaculty=idx; applyFaculty(); startAuto(); }
-function startAuto(){ facultyTimer=setInterval(()=>{ currentFaculty=(currentFaculty+1)%FACULTY.length; applyFaculty(); },SPOTLIGHT_MS); }
-buildTrack(); applyFaculty(); startAuto();
+buildTrack();
 
 /* ══ TECHNICAL STAFF DIRECTORY ══ */
 let technicalStaffIndex=0, technicalStaffTimer=null;
@@ -960,7 +929,7 @@ async function refreshDashboardContent(){
   const facultyRows=realRows(sheets.faculty||[],['Dr. Example Faculty']);
   if(facultyRows.length){
     FACULTY.splice(0,FACULTY.length,...facultyRows.map(r=>({name:r.Name,desig:r.Designation,area:r.Area,image:r.ImageURL||''})));
-    currentFaculty=0;buildTrack();applyFaculty();clearInterval(facultyTimer);startAuto();
+    buildTrack();
   }
   const meetingRows=realRows(sheets.meetings||[],['Department Meeting']);
   if(meetingRows.length){
