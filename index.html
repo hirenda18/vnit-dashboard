@@ -387,6 +387,17 @@ html,body{height:100%;width:100%;background:var(--bg);color:var(--fg);font-famil
 .right-stack .card-hd{background:linear-gradient(110deg,#344a70,#4a6086);border-bottom-color:#344a70}
 .right-stack .card-title{color:#fff}
 .right-stack .card-count{color:#344a70;background:#eff2f7;border-color:#d9e0ea}
+.technical-card{background:#f0f8f2;border:1px solid #b8d9c2;border-top:5px solid #29935b}
+.technical-card .card-hd{background:linear-gradient(100deg,#26764c,#3c9a68);border-bottom:0}
+.technical-card .card-hd .card-title,.technical-card .card-hd .card-count{color:#fff}
+.technical-body{flex:1;min-height:0;overflow:hidden;display:flex;align-items:center;padding:clamp(8px,1vw,16px)}
+.technical-profile{display:flex;align-items:center;gap:clamp(10px,1vw,18px);width:100%;animation:techFade .5s ease}
+.technical-avatar{width:clamp(44px,3.2vw,72px);height:clamp(44px,3.2vw,72px);border-radius:50%;background:#d9eee1;color:#26764c;border:2px solid #65ae82;display:flex;align-items:center;justify-content:center;font-size:clamp(18px,1.2vw,28px);font-weight:800;flex-shrink:0}
+.technical-info{min-width:0}
+.technical-name{font-family:'Space Grotesk',sans-serif;font-size:clamp(17px,1.15vw,24px);font-weight:700;color:#183c2b;line-height:1.25}
+.technical-designation{font-size:clamp(13px,.85vw,18px);font-weight:600;color:#26764c;margin-top:3px}
+.technical-empty{width:100%;text-align:center;color:#4c6b58;font-size:clamp(13px,.85vw,18px);padding:12px}
+@keyframes techFade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
 .bottom-ribbon{background:#202b3c!important;border-color:#39475c!important}
 .bottom-ribbon-label{color:#d6b46f!important;border-right-color:rgba(214,180,111,.4)!important}
 
@@ -536,6 +547,10 @@ html,body{height:100%;width:100%;background:var(--bg);color:var(--fg);font-famil
         <div class="project-scroll-window" id="projectWindow"><div class="project-track" id="projectTrack"><div class="project-empty">Project information will appear here</div></div></div>
       </div>
       
+      <div class="card technical-card">
+        <div class="card-hd"><div class="card-title"><span class="dot dot-green"></span>Technical Staff</div><div class="card-count" id="technicalCount">—</div></div>
+        <div class="technical-body" id="technicalBody"><div class="technical-empty">Technical staff information will appear here</div></div>
+      </div>
     </div>
   </div>
   <div class="bottom-ribbon" role="region" aria-label="Department schedule and notices">
@@ -551,6 +566,11 @@ html,body{height:100%;width:100%;background:var(--bg);color:var(--fg);font-famil
 /* ══════════════════════════════════════════════════════
    ✏️  EDIT THIS SECTION TO UPDATE CONTENT
    ══════════════════════════════════════════════════════ */
+
+/* TECHNICAL STAFF — add name, designation and optional initials below */
+const TECHNICAL_STAFF = [
+  // { name:"Staff Name", desig:"Technical Assistant", initials:"SN" }
+];
 
 /* REAL faculty from vnit.ac.in/engineering/mech/faculty/ */
 const FACULTY = [
@@ -756,6 +776,24 @@ function applyFaculty(){
 function selectFaculty(idx){ clearInterval(facultyTimer); currentFaculty=idx; applyFaculty(); startAuto(); }
 function startAuto(){ facultyTimer=setInterval(()=>{ currentFaculty=(currentFaculty+1)%FACULTY.length; applyFaculty(); },SPOTLIGHT_MS); }
 buildTrack(); applyFaculty(); startAuto();
+
+/* ══ TECHNICAL STAFF DIRECTORY ══ */
+let technicalStaffIndex=0, technicalStaffTimer=null;
+function renderTechnicalStaff(){
+ const body=document.getElementById('technicalBody'); if(!body)return;
+ const count=document.getElementById('technicalCount');
+ count.textContent=TECHNICAL_STAFF.length+' staff';
+ if(!TECHNICAL_STAFF.length){body.innerHTML='<div class="technical-empty">Add staff details in the TECHNICAL_STAFF section</div>';return;}
+ if(technicalStaffTimer)clearInterval(technicalStaffTimer);
+ function show(){
+  const s=TECHNICAL_STAFF[technicalStaffIndex%TECHNICAL_STAFF.length];
+  const initials=s.initials||String(s.name||'').split(/\\s+/).map(n=>n[0]||'').slice(0,2).join('').toUpperCase();
+  body.innerHTML=`<div class="technical-profile"><div class="technical-avatar">${escHtml(initials)}</div><div class="technical-info"><div class="technical-name">${escHtml(s.name||'')}</div><div class="technical-designation">${escHtml(s.desig||'Technical Staff')}</div></div></div>`;
+ }
+ show();
+ if(TECHNICAL_STAFF.length>1)technicalStaffTimer=setInterval(()=>{technicalStaffIndex=(technicalStaffIndex+1)%TECHNICAL_STAFF.length;show();},5000);
+}
+renderTechnicalStaff();
 
 /* ══ MEETINGS ══ */
 function renderMeetings(){
